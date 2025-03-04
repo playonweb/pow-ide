@@ -14,8 +14,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   modules: [
+    '@nuxt/icon',
+    '@pinia/nuxt',
     '@nuxtjs/color-mode',
     '@nuxtjs/tailwindcss',
-    '@nuxt/icon'
+    'pinia-plugin-persistedstate/nuxt'
   ]
 })

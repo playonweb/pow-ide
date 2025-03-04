@@ -13,7 +13,10 @@
     "@nuxt/icon": "latest",
     "@nuxtjs/color-mode": "latest",
     "@nuxtjs/tailwindcss": "latest",
+    "@pinia/nuxt": "latest",
     "nuxt": "latest",
+    "pinia": "latest",
+    "pinia-plugin-persistedstate": "latest",
     "vue": "latest",
     "vue-router": "latest"
   },

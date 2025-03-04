@@ -9,16 +9,13 @@ definePageMeta({
   layout: false,
 })
 
-// Access the route and editor store
 const route = useRoute()
 const editorStore = useEditorStore()
 
 onMounted(() => {
-  // Check query params
   const code = route.query.code
   const run = route.query.run === 'true'
 
-  // If no code or run=true, don’t update DOM (Welcome component will show)
   if (code || run) {
     updateDOM()
   }
@@ -26,21 +23,54 @@ onMounted(() => {
 
 function updateDOM() {
   const code = route.query.code
+  const htmlContent = code ? decodeURIComponent(code) : editorStore.htmlCode
+
+  // Parse the HTML content to extract title and favicon
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(htmlContent, 'text/html')
+  const titleTag = doc.querySelector('title')
+  const faviconTag = doc.querySelector('link[rel="icon"]') || doc.querySelector('link[rel="shortcut icon"]')
+
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     document.open()
-    document.write(code ? decodeURIComponent(code) : editorStore.htmlCode)
+    document.write(htmlContent)
     document.close()
+
+    // Set document title if a <title> tag exists
+    if (titleTag?.textContent) {
+      document.title = titleTag.textContent
+    }
+
+    // Append favicon to head if it exists
+    if (faviconTag) {
+      const existingFavicon = document.querySelector('link[rel="icon"]') || document.querySelector('link[rel="shortcut icon"]')
+      if (existingFavicon) {
+        existingFavicon.remove()
+      }
+      document.head.appendChild(faviconTag.cloneNode())
+    }
   } else {
     document.addEventListener('DOMContentLoaded', () => {
       document.open()
-      document.write(code ? decodeURIComponent(code) : editorStore.htmlCode)
+      document.write(htmlContent)
       document.close()
+
+      if (titleTag?.textContent) {
+        document.title = titleTag.textContent
+      }
+
+      if (faviconTag) {
+        const existingFavicon = document.querySelector('link[rel="icon"]') || document.querySelector('link[rel="shortcut icon"]')
+        if (existingFavicon) {
+          existingFavicon.remove()
+        }
+        document.head.appendChild(faviconTag.cloneNode())
+      }
     }, { once: true })
   }
 }
 </script>
 
 <template>
-  <!-- Show Welcome if no code or run query params -->
   <Welcome v-if="!route.query.code && route.query.run !== 'true'" />
 </template>

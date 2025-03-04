@@ -167,20 +167,6 @@ const setupEditor = () => {
           emit('run');
         }
       }
-    }),
-    // Custom theme settings that work with or without dark mode
-    EditorView.theme({
-      "&": {
-        height: "100%",
-        fontSize: "14px",
-      },
-      ".cm-scroller": {
-        fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-        overflow: "auto"
-      },
-      ".cm-line": {
-        padding: "0 4px"
-      }
     })
   ];
   

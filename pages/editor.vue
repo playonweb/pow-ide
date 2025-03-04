@@ -4,7 +4,7 @@
         <header class="bg-white dark:bg-gray-800 shadow-sm p-4 sticky top-0 z-10">
             <div class="max-w-7xl mx-auto flex items-center justify-between">
                 <div class="flex gap-2">
-                    
+
                     <div class="p-2 bg-gray-950 dark:bg-gray-800 rounded-full">
                         <img src="https://playonweb.org/favicon.ico" height="25" width="25px" />
                     </div>
@@ -21,7 +21,21 @@
             <!-- Editor Panel -->
             <div ref="editorContainer" class="w-1/2 flex flex-col">
                 <div class="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700 rounded-t-lg">
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">HTML Code</h2>
+                    <div class="flex gap-3">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">HTML Code</h2>
+                        <button v-if="isEditorFull && !isOutputFull" @click="switchToOutput"
+                            class="bg-yellow-300 hover:bg-yellow-400 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-gray-800 dark:text-white px-4 py-1.5 rounded-md text-sm transition-colors">
+                            Output
+                        </button>
+                        <label v-if="isEditorFull" class="relative inline-flex items-center cursor-pointer mt-2">
+                            <input type="checkbox" v-model="isDarkMode" class="sr-only peer" />
+                            <div
+                                class="w-11 h-6 bg-black peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500 dark:peer-checked:bg-blue-600">
+                                <span class="absolute left-1 top-1 text-xs text-gray-600">☀️</span>
+                                <span class="absolute right-1 top-1 text-xs text-white">🌙</span>
+                            </div>
+                        </label>
+                    </div>
                     <div class="flex items-center gap-3">
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700 dark:text-gray-300">Live</span>
@@ -40,18 +54,6 @@
                             class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm transition-colors">
                             Share
                         </button>
-                        <button v-if="isEditorFull && !isOutputFull" @click="switchToOutput"
-                            class="bg-green-300 hover:bg-green-400 dark:bg-green-500 dark:hover:bg-green-600 text-gray-800 dark:text-white px-4 py-1.5 rounded-md text-sm transition-colors">
-                            Output
-                        </button>
-                        <label v-if="isEditorFull" class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" v-model="isDarkMode" class="sr-only peer" />
-                            <div
-                                class="w-11 h-6 bg-black peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500 dark:peer-checked:bg-blue-600">
-                                <span class="absolute left-1 top-1 text-xs text-gray-600">☀️</span>
-                                <span class="absolute right-1 top-1 text-xs text-white">🌙</span>
-                            </div>
-                        </label>
                         <button @click="toggleEditorFullScreen"
                             class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white pr-2 py-1.5 transition-colors">
                             <svg v-if="isEditorFull" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -75,15 +77,11 @@
             <!-- Output Panel -->
             <div ref="outputContainer" class="w-1/2 flex flex-col">
                 <div class="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700 rounded-t-lg">
-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Output</h2>
-                    <div class="flex items-center gap-3">
+                    <div class="flex gap-3">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Output</h2>
                         <button v-if="isOutputFull && !isEditorFull" @click="switchToEditor"
-                            class="bg-green-300 hover:bg-green-400 dark:bg-green-500 dark:hover:bg-green-600 text-gray-800 dark:text-white px-4 py-1.5 rounded-md text-sm transition-colors">
+                            class="bg-yellow-300 hover:bg-yellow-400 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-gray-800 dark:text-white px-4 py-1.5 rounded-md text-sm transition-colors">
                             Editor
-                        </button>
-                        <button @click="shareOutput"
-                            class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm transition-colors">
-                            Share
                         </button>
                         <button @click="toggleOutputTheme"
                             class="flex items-center gap-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white px-4 py-1.5 rounded-md text-sm transition-colors"
@@ -96,6 +94,12 @@
                                     class="w-8 h-4 bg-gray-400 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500 dark:peer-checked:bg-blue-600">
                                 </div>
                             </div>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button @click="shareOutput"
+                            class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-1.5 rounded-md text-sm transition-colors">
+                            Share
                         </button>
                         <button @click="openInNewTab" class="text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -231,6 +235,7 @@ const toggleOutputFullScreen = async () => {
 }
 
 const switchToOutput = async () => {
+    runCode()
     await toggleEditorFull() // Exit editor fullscreen
     await toggleOutputFull() // Enter output fullscreen
 }

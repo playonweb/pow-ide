@@ -51,11 +51,12 @@
     
     <!-- CodeMirror Editor -->
     <div
-      class="relative w-full h-[calc(100vh-200px)] border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-lg overflow-hidden"
+      class="relative w-full h-[calc(100vh-200px)] border border-gray-300 dark:border-gray-700 rounded-b-lg overflow-hidden"
       :class="{ 'h-screen': isFullscreen }">
       <ClientOnly>
-        <div ref="editorContainer" class="w-full h-full rounded-b-lg"></div>
-        <!-- Placeholder for SSR -->
+        <div :class="{'bg-white': !isDarkMode, 'bg-gray-800': isDarkMode}" class="w-full h-full">
+          <div ref="editorContainer" class="w-full h-full rounded-b-lg" :class="{'dark-editor': isDarkMode}"></div>
+        </div>
         <template #fallback>
           <div class="w-full h-full p-4 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 font-mono text-sm">
             Loading editor...
@@ -67,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch, nextTick, onUnmounted } from 'vue'
 import { useFullscreen } from '@vueuse/core'
 import { useColorMode } from '#imports'
 import { EditorView, basicSetup } from 'codemirror'
@@ -117,40 +118,49 @@ const liveSync = computed({
   }
 })
 
-// Setup CodeMirror editor
+// Setup CodeMirror editor with more explicit theme handling
 const setupEditor = () => {
   if (!editorContainer.value) return;
   
-  // Create the editor state
+  // Define extensions array based on dark mode
+  const extensions = [
+    basicSetup,
+    html(),
+    EditorView.updateListener.of(update => {
+      if (update.docChanged) {
+        const newValue = update.state.doc.toString();
+        emit('update:modelValue', newValue);
+        
+        if (liveSync.value) {
+          emit('run');
+        }
+      }
+    }),
+    // Custom theme settings that work with or without dark mode
+    EditorView.theme({
+      "&": {
+        height: "100%",
+        fontSize: "14px",
+      },
+      ".cm-scroller": {
+        fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+        overflow: "auto"
+      },
+      ".cm-line": {
+        padding: "0 4px"
+      }
+    })
+  ];
+  
+  // Only add oneDark theme when in dark mode
+  if (isDarkMode.value) {
+    extensions.push(oneDark);
+  }
+  
+  // Create the editor state with the appropriate extensions
   const startState = EditorState.create({
     doc: props.modelValue,
-    extensions: [
-      basicSetup,
-      html(),
-      isDarkMode.value ? oneDark : [],
-      EditorView.updateListener.of(update => {
-        if (update.docChanged) {
-          // Update the modelValue when content changes
-          const newValue = update.state.doc.toString();
-          emit('update:modelValue', newValue);
-          
-          // If live sync is enabled, trigger run
-          if (liveSync.value) {
-            emit('run');
-          }
-        }
-      }),
-      EditorView.theme({
-        "&": {
-          height: "100%",
-          fontSize: "14px"
-        },
-        ".cm-scroller": {
-          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-          overflow: "auto"
-        }
-      })
-    ]
+    extensions: extensions
   });
 
   // Create the editor view
@@ -189,10 +199,25 @@ watch(() => props.modelValue, (newValue) => {
 // Update editor theme when dark mode changes
 watch(isDarkMode, async () => {
   if (editorView.value) {
-    // We need to recreate the editor when changing theme
+    // Store cursor position and selection
+    const currentValue = editorView.value.state.doc.toString();
+    const selection = editorView.value.state.selection;
+    
+    // Destroy and recreate with new theme
     editorView.value.destroy();
     await nextTick();
     setupEditor();
+    
+    // Try to restore cursor position if possible
+    if (editorView.value) {
+      try {
+        editorView.value.dispatch({
+          selection: selection
+        });
+      } catch (e) {
+        console.warn('Could not restore selection after theme change', e);
+      }
+    }
   }
 });
 
@@ -226,7 +251,7 @@ defineExpose({
 </script>
 
 <style>
-/* Add any custom styles for CodeMirror */
+/* Base editor styles */
 .cm-editor {
   height: 100%;
 }
@@ -235,12 +260,60 @@ defineExpose({
   outline: none !important;
 }
 
-/* Style the gutters */
-.cm-gutters {
-  border-right: 1px solid #ddd;
+/* Make sure dark mode background gets applied */
+.bg-gray-800 .cm-editor,
+.dark .cm-editor {
+  background-color: #1e293b !important; /* Tailwind's gray-800 */
 }
 
+.bg-gray-800 .cm-content,
+.dark .cm-content {
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important; /* Tailwind's gray-200 */
+}
+
+.bg-gray-800 .cm-scroller,
+.dark .cm-scroller {
+  background-color: #1e293b !important;
+}
+
+.bg-gray-800 .cm-gutters,
 .dark .cm-gutters {
-  border-right: 1px solid #444;
+  background-color: #1a2234 !important; /* Slightly darker than gray-800 */
+  color: #94a3b8 !important; /* Tailwind's gray-400 */
+  border-right: 1px solid #334155 !important; /* Tailwind's gray-600 */
+}
+
+/* Ensure proper rendering in dark mode */
+.bg-gray-800 .cm-cursor,
+.dark .cm-cursor {
+  border-left-color: #e2e8f0 !important; /* Make cursor visible in dark mode */
+}
+
+/* Tag styling for HTML */
+.bg-gray-800 .cm-tag,
+.dark .cm-tag {
+  color: #93c5fd !important; /* Tailwind's blue-300 */
+}
+
+.bg-gray-800 .cm-attribute,
+.dark .cm-attribute {
+  color: #86efac !important; /* Tailwind's green-300 */
+}
+
+.bg-gray-800 .cm-string,
+.dark .cm-string {
+  color: #fcd34d !important; /* Tailwind's yellow-300 */
+}
+
+/* Style active line and selections */
+.bg-gray-800 .cm-line.cm-activeLine,
+.dark .cm-line.cm-activeLine {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.bg-gray-800 .cm-selectionBackground,
+.dark .cm-selectionBackground {
+  background-color: rgba(30, 64, 175, 0.3) !important; /* Tailwind's blue-800 at 30% opacity */
 }
 </style> 

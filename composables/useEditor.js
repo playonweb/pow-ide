@@ -39,10 +39,8 @@ export function useEditor() {
     const shareUrl = `${window.location.origin}${route.path}?code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)
-      alert('Share URL copied to clipboard: ' + shareUrl)
     } catch (err) {
       console.error('Failed to copy URL: ', err)
-      alert('Failed to copy URL. Here it is: ' + shareUrl)
     }
   }
 
@@ -52,10 +50,8 @@ export function useEditor() {
     const shareUrl = `${window.location.origin}/output?code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)
-      alert('Share URL copied to clipboard: ' + shareUrl)
     } catch (err) {
       console.error('Failed to copy URL: ', err)
-      alert('Failed to copy URL. Here it is: ' + shareUrl)
     }
   }
 

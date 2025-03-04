@@ -38,7 +38,7 @@
         </button>
         <button @click="shareCode"
           class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm transition-colors">
-          Share
+          {{ shareButtonText }}
         </button>
         <button @click="toggleFullscreen"
           class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white px-2 py-1 transition-colors">
@@ -78,7 +78,7 @@
           </button>
           <button @click="shareCode"
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-            Share Code
+            {{ shareButtonText }}
           </button>
           <button @click="toggleFullscreen"
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
@@ -158,6 +158,9 @@ const liveSync = computed({
   }
 })
 
+// Add to the top-level variables in script setup
+const shareButtonText = ref('Share')
+
 // Setup CodeMirror editor with more explicit theme handling
 const setupEditor = () => {
   if (!editorContainer.value) return;
@@ -202,7 +205,11 @@ const runCode = () => {
 }
 
 const shareCode = () => {
-  emit('share');
+  emit('share')
+  shareButtonText.value = 'Copied!'
+  setTimeout(() => {
+    shareButtonText.value = 'Share'
+  }, 2000)
 }
 
 const saveCode = () => {

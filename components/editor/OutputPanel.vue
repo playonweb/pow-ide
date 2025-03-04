@@ -28,7 +28,7 @@
         </button>
         <button @click="shareOutput"
           class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm transition-colors">
-          Share
+          {{ shareButtonText }}
         </button>
         <button @click="openInNewTab" class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white p-1 sm:p-1.5">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -73,7 +73,7 @@
           </button>
           <button @click="shareOutput"
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-            Share Output
+            {{ shareButtonText }}
           </button>
           <button @click="openInNewTab"
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
@@ -115,6 +115,7 @@ const emit = defineEmits(['share-output', 'switch-to-editor'])
 const container = ref(null)
 const outputFrame = ref(null)
 const isOutputDark = useLocalStorage('editor-output-dark', false)
+const shareButtonText = ref('Share')
 
 // Fullscreen handling
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(container)
@@ -166,6 +167,10 @@ const toggleOutputTheme = () => {
 
 const shareOutput = () => {
   emit('share-output')
+  shareButtonText.value = 'Copied!'
+  setTimeout(() => {
+    shareButtonText.value = 'Share'
+  }, 2000)
 }
 
 const switchToEditor = () => {

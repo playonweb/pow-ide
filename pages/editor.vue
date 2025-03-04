@@ -4,9 +4,9 @@
         <EditorHeader />
 
         <!-- Main Content -->
-        <main class="flex-1 flex p-4 gap-4 max-w-7xl mx-auto w-full">
+        <main class="flex-1 flex flex-col md:flex-row p-2 md:p-4 gap-4 max-w-7xl mx-auto w-full">
             <!-- Editor Panel -->
-            <div class="w-1/2">
+            <div class="w-full md:w-1/2 mb-4 md:mb-0">
                 <EditorPanel
                     ref="editorPanel"
                     v-model="editorStore.htmlCode"
@@ -19,7 +19,7 @@
             </div>
 
             <!-- Output Panel -->
-            <div class="w-1/2">
+            <div class="w-full md:w-1/2">
                 <ClientOnly>
                 <OutputPanel
                     ref="outputPanel"

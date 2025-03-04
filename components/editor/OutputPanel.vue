@@ -87,7 +87,7 @@
       </div>
     </div>
     <div class="w-full h-[300px] sm:h-[400px] md:h-[calc(100vh-300px)] lg:h-[calc(100vh-200px)] p-2 sm:p-4 rounded-b-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-auto"
-      :class="{ 'h-screen': isFullscreen }">
+      :class="{ '!h-[calc(100vh-44px)] !max-h-[calc(100vh-44px)]': isFullscreen }">
       <iframe ref="outputFrame" class="w-full h-full border-none" />
     </div>
   </div>

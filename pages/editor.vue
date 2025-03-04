@@ -53,7 +53,6 @@ const isOutputFull = computed(() => outputPanel.value?.isFullscreen || false)
 // Method to update output
 const updateOutput = () => {
     outputPanel.value?.updateOutput()
-    debouncedUpdateUrl()
 }
 
 // Methods for switching between editor and output in fullscreen

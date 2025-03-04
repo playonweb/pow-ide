@@ -30,11 +30,5 @@ export default defineNuxtConfig({
   // css: ['~/assets/css/tailwind.css'],
   devtools: { enabled: true },
 
-  modules: [
-    '@nuxt/icon',
-    '@pinia/nuxt',
-    '@nuxtjs/color-mode',
-    '@nuxtjs/tailwindcss',
-    'pinia-plugin-persistedstate/nuxt'
-  ]
+  modules: ['@nuxt/icon', '@pinia/nuxt', '@nuxtjs/color-mode', '@nuxtjs/tailwindcss', 'pinia-plugin-persistedstate/nuxt', 'nuxt-codemirror']
 })

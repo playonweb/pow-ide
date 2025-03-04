@@ -48,16 +48,32 @@
         </button>
       </div>
     </div>
-    <textarea v-model="htmlCode" @input="onInput"
-      class="w-full h-[calc(100vh-200px)] p-4 rounded-b-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-      :class="{ 'h-screen': isFullscreen }" placeholder="Enter your HTML code here..." />
+    
+    <!-- CodeMirror Editor -->
+    <div
+      class="relative w-full h-[calc(100vh-200px)] border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-b-lg overflow-hidden"
+      :class="{ 'h-screen': isFullscreen }">
+      <ClientOnly>
+        <div ref="editorContainer" class="w-full h-full rounded-b-lg"></div>
+        <!-- Placeholder for SSR -->
+        <template #fallback>
+          <div class="w-full h-full p-4 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 font-mono text-sm">
+            Loading editor...
+          </div>
+        </template>
+      </ClientOnly>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useFullscreen } from '@vueuse/core'
 import { useColorMode } from '#imports'
+import { EditorView, basicSetup } from 'codemirror'
+import { html } from '@codemirror/lang-html'
+import { oneDark } from '@codemirror/theme-one-dark'
+import { EditorState } from '@codemirror/state'
 
 const props = defineProps({
   modelValue: {
@@ -78,6 +94,8 @@ const emit = defineEmits(['update:modelValue', 'update:liveSync', 'run', 'share'
 
 // Template refs
 const container = ref(null)
+const editorContainer = ref(null)
+const editorView = ref(null)
 
 // Fullscreen handling
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(container)
@@ -91,14 +109,6 @@ const isDarkMode = computed({
   }
 })
 
-// Binding model value
-const htmlCode = computed({
-  get: () => props.modelValue,
-  set: (value) => {
-    emit('update:modelValue', value)
-  }
-})
-
 // Binding live sync
 const liveSync = computed({
   get: () => props.liveSync,
@@ -107,28 +117,130 @@ const liveSync = computed({
   }
 })
 
-// Methods
-const onInput = () => {
-  if (liveSync.value) {
-    emit('run')
-  }
+// Setup CodeMirror editor
+const setupEditor = () => {
+  if (!editorContainer.value) return;
+  
+  // Create the editor state
+  const startState = EditorState.create({
+    doc: props.modelValue,
+    extensions: [
+      basicSetup,
+      html(),
+      isDarkMode.value ? oneDark : [],
+      EditorView.updateListener.of(update => {
+        if (update.docChanged) {
+          // Update the modelValue when content changes
+          const newValue = update.state.doc.toString();
+          emit('update:modelValue', newValue);
+          
+          // If live sync is enabled, trigger run
+          if (liveSync.value) {
+            emit('run');
+          }
+        }
+      }),
+      EditorView.theme({
+        "&": {
+          height: "100%",
+          fontSize: "14px"
+        },
+        ".cm-scroller": {
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+          overflow: "auto"
+        }
+      })
+    ]
+  });
+
+  // Create the editor view
+  editorView.value = new EditorView({
+    state: startState,
+    parent: editorContainer.value
+  });
 }
 
+// Methods
 const runCode = () => {
-  emit('run')
+  emit('run');
 }
 
 const shareCode = () => {
-  emit('share')
+  emit('share');
 }
 
 const switchToOutput = () => {
-  emit('switch-to-output')
+  emit('switch-to-output');
 }
+
+// Update editor content when modelValue changes externally
+watch(() => props.modelValue, (newValue) => {
+  if (editorView.value && newValue !== editorView.value.state.doc.toString()) {
+    editorView.value.dispatch({
+      changes: {
+        from: 0,
+        to: editorView.value.state.doc.length,
+        insert: newValue
+      }
+    });
+  }
+});
+
+// Update editor theme when dark mode changes
+watch(isDarkMode, async () => {
+  if (editorView.value) {
+    // We need to recreate the editor when changing theme
+    editorView.value.destroy();
+    await nextTick();
+    setupEditor();
+  }
+});
+
+// Update editor when fullscreen changes
+watch(isFullscreen, async () => {
+  await nextTick();
+  if (editorView.value) {
+    editorView.value.requestMeasure();
+  }
+});
+
+// Initialize editor on component mount
+onMounted(() => {
+  nextTick(() => {
+    setupEditor();
+  });
+});
+
+// Cleanup on component unmount
+onUnmounted(() => {
+  if (editorView.value) {
+    editorView.value.destroy();
+  }
+});
 
 // Expose methods for parent component
 defineExpose({
   toggleFullscreen,
   isFullscreen
 })
-</script> 
+</script>
+
+<style>
+/* Add any custom styles for CodeMirror */
+.cm-editor {
+  height: 100%;
+}
+
+.cm-editor.cm-focused {
+  outline: none !important;
+}
+
+/* Style the gutters */
+.cm-gutters {
+  border-right: 1px solid #ddd;
+}
+
+.dark .cm-gutters {
+  border-right: 1px solid #444;
+}
+</style> 

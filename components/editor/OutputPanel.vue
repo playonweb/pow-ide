@@ -22,6 +22,10 @@
       
       <!-- Desktop Actions -->
       <div class="hidden sm:flex flex-wrap items-center gap-2 sm:gap-3">
+        <button @click="saveOutput"
+          class="bg-purple-500 hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm transition-colors">
+          Save
+        </button>
         <button @click="shareOutput"
           class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm transition-colors">
           Share
@@ -63,6 +67,10 @@
               </label>
             </div>
           </div>
+          <button @click="saveOutput"
+            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+            Save as HTML File
+          </button>
           <button @click="shareOutput"
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
             Share Output
@@ -162,6 +170,53 @@ const shareOutput = () => {
 
 const switchToEditor = () => {
   emit('switch-to-editor')
+}
+
+const saveOutput = () => {
+  // Create the HTML content with proper DOCTYPE and structure
+  const fullHtmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved HTML</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background-color: ${isOutputDark.value ? 'oklch(0.278 0.033 256.848)' : '#ffffff'};
+      color: #000000;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+${props.htmlCode}
+</body>
+</html>`;
+
+  // Create a Blob with the HTML content
+  const blob = new Blob([fullHtmlContent], { type: 'text/html' });
+  
+  // Create a URL for the Blob
+  const url = URL.createObjectURL(blob);
+  
+  // Create a temporary anchor element to trigger the download
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'output.html';
+  
+  // Append to the document, click it, and remove it
+  document.body.appendChild(a);
+  a.click();
+  
+  // Clean up
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
 }
 
 watch(isOutputDark, updateOutput)

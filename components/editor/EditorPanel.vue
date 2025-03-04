@@ -32,6 +32,10 @@
           class="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
           Run
         </button>
+        <button @click="saveCode"
+          class="bg-purple-500 hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm transition-colors">
+          Save
+        </button>
         <button @click="shareCode"
           class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm transition-colors">
           Share
@@ -67,6 +71,10 @@
           <button @click="runCode" :disabled="liveSync"
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:hover:bg-white dark:disabled:hover:bg-gray-700 disabled:cursor-not-allowed">
             Run Code
+          </button>
+          <button @click="saveCode"
+            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+            Save as HTML File
           </button>
           <button @click="shareCode"
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
@@ -195,6 +203,42 @@ const runCode = () => {
 
 const shareCode = () => {
   emit('share');
+}
+
+const saveCode = () => {
+  // Create the HTML content with proper DOCTYPE and structure
+  const fullHtmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved HTML</title>
+</head>
+<body>
+${props.modelValue}
+</body>
+</html>`;
+
+  // Create a Blob with the HTML content
+  const blob = new Blob([fullHtmlContent], { type: 'text/html' });
+  
+  // Create a URL for the Blob
+  const url = URL.createObjectURL(blob);
+  
+  // Create a temporary anchor element to trigger the download
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'code.html';
+  
+  // Append to the document, click it, and remove it
+  document.body.appendChild(a);
+  a.click();
+  
+  // Clean up
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
 }
 
 const switchToOutput = () => {

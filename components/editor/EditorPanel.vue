@@ -108,7 +108,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick, onUnmounted } from 'vue'
-import { useFullscreen } from '@vueuse/core'
+import { useFullscreen, useEventListener, useMagicKeys } from '@vueuse/core'
 import { useColorMode } from '#imports'
 import { EditorView, basicSetup } from 'codemirror'
 import { html } from '@codemirror/lang-html'
@@ -160,6 +160,22 @@ const liveSync = computed({
 
 // Add to the top-level variables in script setup
 const shareButtonText = ref('Share')
+
+// Add keyboard monitoring only for paste event
+const keys = useMagicKeys()
+
+// Just monitor Ctrl+V for paste events
+const { ctrl_v, meta_v } = keys
+const isPaste = computed(() => ctrl_v.value || meta_v.value)
+
+watch(isPaste, (newValue) => {
+  if (newValue && liveSync.value) {
+    // Small delay to allow editor to update with pasted content
+    setTimeout(() => {
+      runCode();
+    }, 100);
+  }
+})
 
 // Setup CodeMirror editor with more explicit theme handling
 const setupEditor = () => {
@@ -305,18 +321,18 @@ onMounted(() => {
   });
 });
 
-// Cleanup on component unmount
-onUnmounted(() => {
-  if (editorView.value) {
-    editorView.value.destroy();
-  }
-});
-
 // Expose methods for parent component
 defineExpose({
   toggleFullscreen,
   isFullscreen
 })
+
+// Clean up only the editor view on unmount
+onUnmounted(() => {
+  if (editorView.value) {
+    editorView.value.destroy();
+  }
+});
 </script>
 
 <style>

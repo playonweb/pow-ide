@@ -20,6 +20,7 @@
     "@nuxtjs/tailwindcss": "latest",
     "@pinia/nuxt": "latest",
     "@vueuse/integrations": "^13.0.0",
+    "brotli-wasm": "^3.0.1",
     "codemirror": "^6.0.1",
     "html2canvas": "^1.4.1",
     "nuxt": "latest",

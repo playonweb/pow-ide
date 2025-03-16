@@ -6,7 +6,10 @@ export function useQr() {
 
   const generateQr = async (text) => {
     qrCode.value = "";
-    const qr = await useQRCode(text);
+    const qr = await useQRCode(text, {
+      errorCorrectionLevel: 'H',
+      margin: 3,
+    });
     qrCode.value = qr.value || "";
   };
 

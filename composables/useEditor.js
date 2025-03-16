@@ -8,6 +8,7 @@ export function useEditor() {
   const router = useRouter()
   const editorStore = useEditorStore()
   const liveSync = ref(false)
+  const { generateQr } = useQr();
 
   // Debounced update for URL sharing
   const debouncedUpdateUrl = useDebounceFn(() => {
@@ -39,6 +40,7 @@ export function useEditor() {
     const shareUrl = `${window.location.origin}${route.path}?code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)
+      generateQr(shareUrl);
     } catch (err) {
       console.error('Failed to copy URL: ', err)
     }
@@ -50,6 +52,7 @@ export function useEditor() {
     const shareUrl = `${window.location.origin}/output?code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)
+      generateQr(shareUrl);
     } catch (err) {
       console.error('Failed to copy URL: ', err)
     }

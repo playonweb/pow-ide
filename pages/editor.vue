@@ -2,7 +2,10 @@
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
         <!-- Header -->
         <EditorHeader />
+        <ClientOnly>
 
+            <EditorShowQr />
+        </ClientOnly>
         <!-- Main Content -->
         <main class="flex-1 flex flex-col md:flex-row p-2 md:p-4 gap-4 max-w-7xl mx-auto w-full">
             <!-- Editor Panel -->

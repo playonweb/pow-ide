@@ -2,33 +2,45 @@
 export default defineNuxtConfig({
   app: {
     head: {
-      title: 'PoW IDE - Online HTML Editor with Dark Mode & Live Sync',
+      title: "PoW IDE - Online HTML Editor with Dark Mode & Live Sync",
       meta: [
-        { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { charset: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
         {
-          name: 'description',
+          name: "description",
           content:
-            'PoW IDE: A powerful online HTML editor with dark mode, full-screen editing, live sync, code sharing, output sharing, and persistent storage. Build and test HTML, CSS, and JS seamlessly.',
+            "PoW IDE: A powerful online HTML editor with dark mode, full-screen editing, live sync, code sharing, output sharing, and persistent storage. Build and test HTML, CSS, and JS seamlessly.",
         },
         {
-          name: 'keywords',
+          name: "keywords",
           content:
-            'online HTML editor, PoW IDE, dark mode code editor, live sync HTML editor, full-screen HTML IDE, share code online, persistent code storage, web development tool, free HTML editor, toggle dark mode IDE',
+            "online HTML editor, PoW IDE, dark mode code editor, live sync HTML editor, full-screen HTML IDE, share code online, persistent code storage, web development tool, free HTML editor, toggle dark mode IDE",
         },
-        { name: 'author', content: 'PoW IDE Team' },
-        { name: 'robots', content: 'index, follow' },
+        { name: "author", content: "PoW IDE Team" },
+        { name: "robots", content: "index, follow" },
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: 'https://playonweb.org/favicon.ico' },
+        {
+          rel: "icon",
+          type: "image/x-icon",
+          href: "https://playonweb.org/favicon.ico",
+        },
       ],
     },
   },
 
-  compatibilityDate: '2024-11-01',
+  compatibilityDate: "2024-11-01",
 
   // css: ['~/assets/css/tailwind.css'],
   devtools: { enabled: true },
 
-  modules: ['@nuxt/icon', '@pinia/nuxt', '@nuxtjs/color-mode', '@nuxtjs/tailwindcss', 'pinia-plugin-persistedstate/nuxt', 'nuxt-codemirror']
-})
+  modules: [
+    "@nuxt/icon",
+    "@pinia/nuxt",
+    "@nuxtjs/color-mode",
+    "@nuxtjs/tailwindcss",
+    "pinia-plugin-persistedstate/nuxt",
+    "nuxt-codemirror",
+    "@vueuse/nuxt",
+  ],
+});

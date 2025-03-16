@@ -44,6 +44,7 @@ import OutputPanel from '~/components/editor/OutputPanel.vue'
 
 // Setup editor functionality
 const { editorStore, liveSync, loadCodeFromUrl, shareCode, shareOutput, debouncedUpdateUrl } = useEditor()
+const { decompress } = useBrotli();
 
 // Template refs
 const editorPanel = ref(null)
@@ -79,9 +80,9 @@ watch(() => editorStore.htmlCode, () => {
 
 // Watch route changes to update code (for back/forward navigation)
 const route = useRoute()
-watch(() => route.query.code, (newCode) => {
+watch(() => route.query.code, async (newCode) => {
     if (newCode) {
-        editorStore.setHtmlCode(decodeURIComponent(newCode))
+        editorStore.setHtmlCode(await decompress(decodeURIComponent(newCode)))
         updateOutput()
     }
 })

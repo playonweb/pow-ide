@@ -8,6 +8,7 @@ export function useEditor() {
   const router = useRouter()
   const editorStore = useEditorStore()
   const liveSync = ref(false)
+  const { compress, decompress } = useBrotli();
   const { generateQr } = useQr();
 
   // Debounced update for URL sharing
@@ -27,16 +28,16 @@ export function useEditor() {
   }
 
   // Function to load code from URL
-  const loadCodeFromUrl = () => {
+  const loadCodeFromUrl = async () => {
     const code = route.query.code
     if (code) {
-      editorStore.setHtmlCode(decodeURIComponent(code))
+      editorStore.setHtmlCode(await decompress(decodeURIComponent(code)))
     }
   }
 
   // Share code function
   const shareCode = async () => {
-    const encodedCode = encodeURIComponent(editorStore.htmlCode)
+    const encodedCode = encodeURIComponent(await compress(editorStore.htmlCode))
     const shareUrl = `${window.location.origin}${route.path}?code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)
@@ -48,7 +49,7 @@ export function useEditor() {
 
   // Share output function
   const shareOutput = async () => {
-    const encodedCode = encodeURIComponent(editorStore.htmlCode)
+    const encodedCode = encodeURIComponent(await compress(editorStore.htmlCode))
     const shareUrl = `${window.location.origin}/output?code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)

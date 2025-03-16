@@ -4,6 +4,8 @@ import { useRoute } from 'nuxt/app'
 import { useEditorStore } from '~/stores/editor'
 import Welcome from '~/components/Welcome.vue'
 
+const { decompress } = useBrotli();
+
 // Disable layout to avoid wrapping
 definePageMeta({
   layout: false,
@@ -21,9 +23,9 @@ onMounted(() => {
   }
 })
 
-function updateDOM() {
+async function updateDOM() {
   const code = route.query.code
-  const htmlContent = code ? decodeURIComponent(code) : editorStore.htmlCode
+  const htmlContent = code ? await decompress(decodeURIComponent(code)) : editorStore.htmlCode
 
   // Parse the HTML content to extract title and favicon
   const parser = new DOMParser()

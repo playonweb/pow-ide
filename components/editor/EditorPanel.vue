@@ -398,3 +398,9 @@ onUnmounted(() => {
   }
 });
 </script>
+<style>
+/* Dirty fix editor scrollbar */
+.cm-editor {
+  height: 100%;
+}
+</style>

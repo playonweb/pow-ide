@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="author" content="Rahul Dhole" />
+    <meta
+      name="description"
+      content="Vue 3 and Tailwind CSS 2 Boilerplate - Single File Application"
+    />
+    <meta
+      name="keywords"
+      content="Vue 3, Tailwind CSS 2, Boilerplate, Single Fila Application, SFA"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#6366f1" />
+    <title>SFA Boilerplate</title>
+    <link rel="icon" href="https://vuejs.org/logo.svg" type="image/x-icon" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+      @custom-variant dark (&:where(.dark, .dark *));
+
+      @layer base {
+        :root {
+          --color-primary: linear-gradient(
+            45deg,
+            #6366f1,
+            #a855f7
+          ); /* Indigo to Purple */
+          --color-secondary: linear-gradient(
+            45deg,
+            #f59e0b,
+            #f97316
+          ); /* Amber to Orange */
+          --color-surface: linear-gradient(
+            45deg,
+            #f9fafb,
+            #f3f4f6
+          ); /* Light Gray to Gray */
+        }
+
+        .dark {
+          --color-primary: linear-gradient(
+            45deg,
+            #4338ca,
+            #7c3aed
+          ); /* Dark Indigo to Dark Purple */
+          --color-secondary: linear-gradient(
+            45deg,
+            #b45309,
+            #c2410c
+          ); /* Dark Amber to Dark Orange */
+          --color-surface: linear-gradient(
+            45deg,
+            #1f2937,
+            #111827
+          ); /* Dark Gray to Darker Gray */
+        }
+      }
+
+      @layer utilities {
+        .bg-primary {
+          background: var(--color-primary);
+        }
+        .text-primary {
+          background: var(--color-primary);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .bg-secondary {
+          background: var(--color-secondary);
+        }
+        .text-secondary {
+          background: var(--color-secondary);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .bg-surface {
+          background: var(--color-surface);
+        }
+        .text-surface {
+          color: rgb(255 255 255 / 1); /* Default surface text color */
+        }
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/primeicons/primeicons.css"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "https://unpkg.com/vue@3.5.13/dist/vue.esm-browser.prod.js",
+          "firebase/app": "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js",
+          "firebase/analytics": "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import { initializeApp } from "firebase/app";
+      import { getAnalytics } from "firebase/analytics";
+      const firebaseConfig = {
+        apiKey: "xxxxxxx-xxxxxxx_xxxxxx",
+        authDomain: "xxxx-xxxx.firebaseapp.com",
+        projectId: "xxxxxx-xxxx",
+        storageBucket: "xxxx-xxxx.firebasestorage.app",
+        messagingSenderId: "xxxxxxxx",
+        appId: "1:xxxx:web:xxxx",
+        measurementId: "G-xxxxx",
+      };
+      const firebaseApp = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(firebaseApp);
+      window.__firebaseApp__ = firebaseApp;
+    </script>
+    <script type="module">
+      import { createApp, ref } from "vue";
+      import { 
+        getAuth, signInWithEmailAndPassword, signOut, 
+        createUserWithEmailAndPassword, onAuthStateChanged 
+      } from "firebase/auth";
+      import { 
+        getFirestore, doc, getDoc, setDoc 
+      } from "firebase/firestore";
+      
+      const useFirebase = () => {
+        const auth = getAuth(window.__firebaseApp__);
+        const db = getFirestore(window.__firebaseApp__);
+        const user = ref(null);
+        const counter = ref(0);
+
+        const loadUserCounter = async () => {
+          if (user.value) {
+            try {
+              const docRef = doc(db, "users", user.value.uid);
+              const docSnap = await getDoc(docRef);
+              if (docSnap.exists()) {
+                counter.value = docSnap.data().counter;
+              }
+            } catch (error) {
+              console.error("Error loading counter:", error);
+            }
+          }
+        };
+
+        const saveCounter = async () => {
+          if (user.value) {
+            try {
+              await setDoc(doc(db, "users", user.value.uid), {
+                counter: counter.value,
+                email: user.value.email,
+              });
+            } catch (error) {
+              console.error("Error saving counter:", error);
+            }
+          }
+        };
+
+        const login = async (email, password) => {
+          try {
+            await signInWithEmailAndPassword(auth, email, password);
+          } catch (error) {
+            throw error;
+          }
+        };
+
+        const logout = async () => {
+          try {
+            await signOut(auth);
+            counter.value = 0;
+          } catch (error) {
+            console.error("Error signing out:", error);
+            throw error;
+          }
+        };
+
+        const register = async (email, password) => {
+          try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await setDoc(doc(db, "users", userCredential.user.uid), {
+              counter: 0,
+              email,
+            });
+          } catch (error) {
+            console.error("Registration error:", error);
+            throw error;
+          }
+        };
+
+        onAuthStateChanged(auth, (currentUser) => {
+          user.value = currentUser;
+          console.log("User state changed:", currentUser);
+          if (currentUser) {
+            loadUserCounter();
+          } else {
+            counter.value = 0;
+          }
+        });
+
+        return { user, counter, loadUserCounter, saveCounter, login, logout, register };
+      };
+
+      const { user, counter, login, logout, register, saveCounter } = useFirebase();
+      const isDarkMode = ref(false);
+      const showLoginModal = ref(false);
+      const showRegisterModal = ref(false);
+
+      const Navbar = {
+        template: "#navbar-template",
+        methods: {
+          toggleDarkMode() {
+            isDarkMode.value = !isDarkMode.value;
+            document.documentElement.classList.toggle("dark", isDarkMode.value);
+          },
+          async handleLogout() {
+            try {
+              await logout();
+              counter.value = 0;
+            } catch (error) {
+              console.error("Error signing out:", error);
+            }
+          },
+        },
+        mounted() {
+          const darkModeMediaQuery = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          );
+          if (darkModeMediaQuery.matches) {
+            isDarkMode.value = true;
+            document.documentElement.classList.add("dark");
+            console.log("User prefers dark mode");
+          } else {
+            console.log("User prefers light mode");
+          }
+          darkModeMediaQuery.addEventListener("change", (e) => {
+            isDarkMode.value = e.matches;
+            document.documentElement.classList.toggle("dark", e.matches);
+          });
+        },
+      };
+
+      const Counter = {
+        template: "#counter-template",
+        computed: {
+          counter() {
+            return this.$root.counter;
+          },
+          user() {
+            return this.$root.user;
+          },
+        },
+        methods: {
+          increment() {
+            this.$root.counter++;
+            this.$root.saveCounter();
+          },
+        },
+      };
+
+      const CounterDemo = {
+        template: "#counter-demo-template",
+        computed: {
+          counter() {
+            return this.$root.counter;
+          },
+        },
+        methods: {
+          increment() {
+            this.$root.counter++;
+            this.$root.saveCounter();
+          },
+        },
+      };
+
+      const LoginModal = {
+        template: "#login-modal-template",
+        data() {
+          return {
+            email: "",
+            password: "",
+            error: "",
+            loading: false,
+          };
+        },
+        methods: {
+          async login() {
+            this.loading = true;
+            this.error = "";
+            try {
+              await login(this.email, this.password);
+              showLoginModal.value = false;
+            } catch (err) {
+              this.error = err.message;
+            } finally {
+              this.loading = false;
+            }
+          },
+        },
+      };
+
+      const RegisterModal = {
+        template: "#register-modal-template",
+        data() {
+          return {
+            email: "",
+            password: "",
+            confirmPassword: "",
+            error: "",
+            loading: false,
+          };
+        },
+        methods: {
+          async register() {
+            if (this.password !== this.confirmPassword) {
+              this.error = "Passwords do not match";
+              return;
+            }
+            this.loading = true;
+            this.error = "";
+            try {
+              await register(this.email, this.password);
+              showRegisterModal.value = false;
+            } catch (err) {
+              console.error("Registration error:", err);
+              this.error = err.message;
+            } finally {
+              this.loading = false;
+            }
+          },
+        },
+      };
+
+      const vueApp = createApp({
+        setup() {
+          return {
+            user,
+            showLoginModal,
+            showRegisterModal,
+            counter,
+            isDarkMode,
+            saveCounter,
+          };
+        },
+      });
+      vueApp.component("Navbar", Navbar);
+      vueApp.component("Counter", Counter);
+      vueApp.component("counter-demo", CounterDemo);
+      vueApp.component("login-modal", LoginModal);
+      vueApp.component("register-modal", RegisterModal);
+      vueApp.mount("#app");
+    </script>
+  </head>
+  <body class="bg-surface text-surface transition-colors duration-300">
+    <div id="app" class="flex flex-col min-h-screen">
+      <Navbar></Navbar>
+      <main class="flex flex-col items-center justify-center flex-grow">
+        <Counter v-if="$root.user"></Counter>
+        <counter-demo v-else></counter-demo>
+      </main>
+      <login-modal v-if="showLoginModal"></login-modal>
+      <register-modal v-if="showRegisterModal"></register-modal>
+    </div>
+
+    <!-- Template definitions (each only once) -->
+    <template id="navbar-template">
+      <nav
+        class="w-full p-4 bg-surface flex justify-between items-center shadow-md"
+      >
+        <h1 class="text-xl font-bold text-primary">SFA Boilerplate</h1>
+        <div class="flex items-center gap-4">
+          <div v-if="$root.user">
+            <span class="mr-2">Hello, {{ $root.user.email }}</span>
+            <button
+              @click="handleLogout"
+              class="p-2 rounded-md transition-colors bg-secondary text-surface hover:bg-opacity-90"
+            >
+              Logout
+            </button>
+          </div>
+          <div v-else class="flex gap-2">
+            <button
+              @click="$root.showLoginModal = true"
+              class="p-2 rounded-md transition-colors bg-secondary text-surface hover:bg-opacity-90"
+            >
+              Login
+            </button>
+            <button
+              @click="$root.showRegisterModal = true"
+              class="p-2 rounded-md transition-colors bg-primary text-surface hover:bg-opacity-90"
+            >
+              Register
+            </button>
+          </div>
+          <button
+            @click="toggleDarkMode"
+            class="p-2 rounded-md transition-colors bg-secondary text-surface hover:bg-opacity-90"
+          >
+            <i v-if="isDarkMode" class="pi pi-moon"></i>
+            <i v-else class="pi pi-sun"></i>
+          </button>
+        </div>
+      </nav>
+    </template>
+
+    <template id="counter-template">
+      <div class="text-center">
+        <p v-if="user" class="text-xl text-primary mb-4">
+          Counter: {{ counter }}
+        </p>
+        <p v-else class="text-xl text-primary mb-4">
+          Please login to save your counter
+        </p>
+        <button
+          @click="increment"
+          class="p-2 rounded-md bg-primary text-surface hover:bg-opacity-90"
+        >
+          Increment
+        </button>
+      </div>
+    </template>
+
+    <template id="counter-demo-template">
+      <div class="text-center">
+        <p class="text-xl text-primary mb-4">Counter Demo: {{ counter }}</p>
+        <button
+          @click="increment"
+          class="p-2 rounded-md bg-primary text-surface hover:bg-opacity-90"
+        >
+          Increment Demo
+        </button>
+      </div>
+    </template>
+
+    <template id="login-modal-template">
+      <div
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      >
+        <div class="bg-surface p-6 rounded-lg shadow-lg w-full max-w-md">
+          <h2 class="text-xl font-bold mb-4 text-primary">Login</h2>
+          <div>
+            <div
+              v-if="error"
+              class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+            >
+              {{ error }}
+            </div>
+            <form @submit.prevent="login">
+              <div class="mb-4">
+                <label class="block mb-2">Email</label>
+                <input
+                  type="email"
+                  v-model="email"
+                  required
+                  class="w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700"
+                />
+              </div>
+              <div class="mb-4">
+                <label class="block mb-2">Password</label>
+                <input
+                  type="password"
+                  v-model="password"
+                  required
+                  class="w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700"
+                />
+              </div>
+              <div class="flex justify-between">
+                <button
+                  type="submit"
+                  class="p-2 rounded-md bg-primary text-surface hover:bg-opacity-90"
+                  :disabled="loading"
+                >
+                  {{ loading ? 'Logging in...' : 'Login' }}
+                </button>
+                <button
+                  @click="$root.showLoginModal = false"
+                  type="button"
+                  class="p-2 rounded-md bg-gray-300 text-gray-800 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template id="register-modal-template">
+      <div
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      >
+        <div class="bg-surface p-6 rounded-lg shadow-lg w-full max-w-md">
+          <h2 class="text-xl font-bold mb-4 text-primary">Register</h2>
+          <div
+            v-if="error"
+            class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+          >
+            {{ error }}
+          </div>
+          <form @submit.prevent="register">
+            <div class="mb-4">
+              <label class="block mb-2">Email</label>
+              <input
+                type="email"
+                v-model="email"
+                required
+                class="w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block mb-2">Password</label>
+              <input
+                type="password"
+                v-model="password"
+                required
+                class="w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block mb-2">Confirm Password</label>
+              <input
+                type="password"
+                v-model="confirmPassword"
+                required
+                class="w-full p-2 border rounded dark:bg-gray-800 dark:border-gray-700"
+              />
+            </div>
+            <div class="flex justify-between">
+              <button
+                type="submit"
+                class="p-2 rounded-md bg-primary text-surface hover:bg-opacity-90"
+                :disabled="loading"
+              >
+                {{ loading ? 'Registering...' : 'Register' }}
+              </button>
+              <button
+                @click="$root.showRegisterModal = false"
+                type="button"
+                class="p-2 rounded-md bg-gray-300 text-gray-800 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-200"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js Google Drive Integration</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div id="app" class="bg-white p-8 rounded-xl shadow-xl w-full max-w-lg">
+        <div v-if="!isAuthenticated" class="flex flex-col items-center space-y-6">
+            <h1 class="text-2xl font-semibold text-gray-800">Welcome</h1>
+            <button @click="authenticateUser" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">
+                Sign In with Google
+            </button>
+        </div>
+        <div v-else class="space-y-6">
+            <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                <div>
+                    <p class="text-lg font-medium text-gray-800">{{ userName }}</p>
+                    <p class="text-sm text-gray-600">{{ userEmail }}</p>
+                </div>
+                <button @click="logout" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300">
+                    Logout
+                </button>
+            </div>
+            <div class="text-center">
+                <p class="text-3xl font-bold text-gray-800">Counter: {{ counter }}</p>
+            </div>
+            <div class="flex justify-center space-x-6">
+                <button @click="incrementCounter" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-300">
+                    Increment
+                </button>
+                <button @click="saveCounterToDrive" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition duration-300">
+                    Save to Drive
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const counter = ref(0);
+                const isAuthenticated = ref(false);
+                const accessToken = ref(null);
+                const tokenClient = ref(null);
+                const userName = ref('');
+                const userEmail = ref('');
+
+                const authenticateUser = () => {
+                    if (tokenClient.value) {
+                        tokenClient.value.requestAccessToken();
+                    } else {
+                        console.error('Token client not initialized yet');
+                    }
+                };
+
+                const logout = () => {
+                    google.accounts.id.revoke();
+                    isAuthenticated.value = false;
+                    userName.value = '';
+                    userEmail.value = '';
+                };
+
+                const incrementCounter = () => {
+                    counter.value++;
+                };
+
+                const saveCounterToDrive = () => {
+                    if (!accessToken.value) {
+                        console.error('No access token available');
+                        return;
+                    }
+                    const data = { counter: counter.value };
+                    const filename = 'counter.json';
+                    const fileContent = JSON.stringify(data);
+                    const file = new Blob([fileContent], { type: 'application/json' });
+                    const metadata = {
+                        name: filename,
+                        mimeType: 'application/json',
+                    };
+                    const form = new FormData();
+                    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+                    form.append('file', file);
+
+                    fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                        method: 'POST',
+                        headers: new Headers({ 'Authorization': 'Bearer ' + accessToken.value }),
+                        body: form,
+                    })
+                        .then((response) => response.json())
+                        .then((result) => {
+                            console.log('File saved to Drive:', result);
+                        })
+                        .catch((error) => {
+                            console.error('Error saving file to Drive:', error);
+                        });
+                };
+
+                onMounted(() => {
+                    const interval = setInterval(() => {
+                        if (window.google && window.google.accounts) {
+                            clearInterval(interval);
+                            tokenClient.value = google.accounts.oauth2.initTokenClient({
+                                client_id: 'xxxxxxxx-xxxxxxx.apps.googleusercontent.com',
+                                scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+                                callback: (response) => {
+                                    if (response.access_token) {
+                                        accessToken.value = response.access_token;
+                                        isAuthenticated.value = true;
+                                        fetchUserInfo();
+                                    } else {
+                                        console.error('Error obtaining access token:', response);
+                                    }
+                                },
+                            });
+                            console.log('Token client initialized.');
+                        }
+                    }, 100);
+                });
+
+                const fetchUserInfo = () => {
+                    fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                        headers: new Headers({ 'Authorization': 'Bearer ' + accessToken.value }),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            userName.value = data.name;
+                            userEmail.value = data.email;
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching user info:', error);
+                        });
+                };
+
+                return {
+                    counter,
+                    isAuthenticated,
+                    userName,
+                    userEmail,
+                    authenticateUser,
+                    logout,
+                    incrementCounter,
+                    saveCounterToDrive,
+                };
+            },
+        }).mount('#app');
+    </script>
+</body>
+</html>

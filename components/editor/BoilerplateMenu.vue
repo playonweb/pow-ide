@@ -134,13 +134,13 @@ const templates = [
     file: 'firebase.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/firebase.svg'
   },
-//   {
-//     id: 11,
-//     name: 'Supabase',
-//     description: 'Open source Firebase alternative',
-//     file: 'supabase.html',
-//     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/supabase.svg'
-//   },
+  {
+    id: 11,
+    name: 'Google Drive',
+    description: 'Google Drive API integration',
+    file: 'google-drive.html',
+    icon: 'https://drive.google.com/favicon.ico'
+  },
   {
     id: 12,
     name: 'GSAP',

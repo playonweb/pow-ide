@@ -1,3 +1,14 @@
+<script setup>
+useHead({
+  link: [
+    {
+      rel: "icon",
+      type: "image/x-icon",
+      href: "https://playonweb.org/favicon.ico",
+    },
+  ],
+});
+</script>
 <template>
     <div>
       <ClientOnly>

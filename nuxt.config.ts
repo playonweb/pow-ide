@@ -19,13 +19,6 @@ export default defineNuxtConfig({
         { name: "author", content: "PoW IDE Team" },
         { name: "robots", content: "index, follow" },
       ],
-      link: [
-        {
-          rel: "icon",
-          type: "image/x-icon",
-          href: "https://playonweb.org/favicon.ico",
-        },
-      ],
     },
   },
 

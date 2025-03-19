@@ -106,13 +106,13 @@ const templates = [
     file: 'bootstrap.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/bootstrap.svg'
   },
-//   {
-//     id: 7,
-//     name: 'Svelte',
-//     description: 'Cybernetically enhanced web apps',
-//     file: 'svelte.html',
-//     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/svelte.svg'
-//   },
+  {
+    id: 7,
+    name: 'HTMX',
+    description: 'AJAX with HTML attributes',
+    file: 'htmx.html',
+    icon: 'https://htmx.org/favicon.svg'
+  },
   {
     id: 8,
     name: 'Alpine.js',

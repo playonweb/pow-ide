@@ -25,6 +25,7 @@
     "html2canvas": "^1.4.1",
     "nuxt": "latest",
     "nuxt-codemirror": "^0.0.12",
+    "nuxt-gtag": "^3.0.2",
     "pinia": "latest",
     "pinia-plugin-persistedstate": "latest",
     "qrcode": "^1.5.4",

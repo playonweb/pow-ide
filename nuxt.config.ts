@@ -34,13 +34,10 @@ export default defineNuxtConfig({
   // css: ['~/assets/css/tailwind.css'],
   devtools: { enabled: true },
 
-  modules: [
-    "@nuxt/icon",
-    "@pinia/nuxt",
-    "@nuxtjs/color-mode",
-    "@nuxtjs/tailwindcss",
-    "pinia-plugin-persistedstate/nuxt",
-    "nuxt-codemirror",
-    "@vueuse/nuxt",
-  ],
+  gtag: {
+    enabled: process.env.NODE_ENV === 'production',
+    id: 'G-YXJBQ78MEG'
+  },
+
+  modules: ["@nuxt/icon", "@pinia/nuxt", "@nuxtjs/color-mode", "@nuxtjs/tailwindcss", "pinia-plugin-persistedstate/nuxt", "nuxt-codemirror", "@vueuse/nuxt", "nuxt-gtag"],
 });

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3.js Boilerplate</title>
+    <link rel="icon" href="https://cdn.jsdelivr.net/gh/your-repo/d3-icon.png" type="image/png">
+    <style>
+        body { margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; background: #222; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script>
+        // Create an SVG container
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const svg = d3.select("body")
+                      .append("svg")
+                      .attr("width", width)
+                      .attr("height", height);
+
+        // Append a circle
+        const circle = svg.append("circle")
+                          .attr("cx", 50)
+                          .attr("cy", height / 2)
+                          .attr("r", 30)
+                          .attr("fill", "lime");
+
+        // Animate the circle
+        function animate() {
+            circle.transition()
+                  .duration(2000)
+                  .attr("cx", width - 50)
+                  .ease(d3.easeSinInOut)
+                  .transition()
+                  .duration(2000)
+                  .attr("cx", 50)
+                  .ease(d3.easeSinInOut)
+                  .on("end", animate); // Loop animation
+        }
+
+        animate();
+    </script>
+</body>
+</html>

@@ -2,6 +2,16 @@
   <div ref="container" class="flex flex-col">
     <div class="flex flex-row items-center justify-between p-2 bg-gray-200 dark:bg-gray-700 rounded-t-lg">
       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div class="relative">
+          <button class="text-2xl text-red-500" @click.stop="showMenu">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" :stroke="isDarkMode ? 'white' : 'black'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu w-6 h-6">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <BoilerplateMenu v-model="showMenuPopup" @select="loadBoilerplate" />
+        </div>
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">HTML Code</h2>
         <button v-if="isFullscreen && !isOutputFull" @click="switchToOutput"
           class="bg-yellow-300 hover:bg-yellow-400 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-gray-800 dark:text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm transition-colors">
@@ -115,6 +125,7 @@ import { html } from '@codemirror/lang-html'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorState } from '@codemirror/state'
 import EditorDropdownMenu from './EditorDropdownMenu.vue'
+import BoilerplateMenu from './BoilerplateMenu.vue'
 
 const props = defineProps({
   modelValue: {
@@ -268,6 +279,30 @@ const switchToOutput = () => {
   emit('switch-to-output');
 }
 
+// Boilerplate menu toggle
+const showMenuPopup = ref(false)
+
+// Show menu method - added .stop to prevent event propagation
+const showMenu = (event) => {
+  if (event) {
+    event.stopPropagation();
+  }
+  showMenuPopup.value = !showMenuPopup.value;
+}
+
+// Method to load boilerplate content
+const loadBoilerplate = (fileName) => {
+  fetch(`boilerplates/${fileName}`)  // Removed leading slash to make path relative
+    .then(res => res.text())
+    .then(text => {
+      emit('update:modelValue', text);
+      runCode(); // Automatically run the code when loading a boilerplate
+    })
+    .catch(err => {
+      console.error('Error loading boilerplate:', err);
+    });
+}
+
 // Update editor content when modelValue changes externally
 watch(() => props.modelValue, (newValue) => {
   if (editorView.value && newValue !== editorView.value.state.doc.toString()) {
@@ -401,4 +436,4 @@ onUnmounted(() => {
 .dark .cm-selectionBackground {
   background-color: rgba(30, 64, 175, 0.3) !important; /* Tailwind's blue-800 at 30% opacity */
 }
-</style> 
+</style>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lit Boilerplate</title>
+    <link rel="icon" href="https://cdn.jsdelivr.net/gh/your-repo/lit-icon.png" type="image/png">
+    <script type="module">
+        import { LitElement, html, css } from "https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js";
+
+        class MyCounter extends LitElement {
+            static styles = css`
+                button {
+                    font-size: 1.2rem;
+                    padding: 10px 20px;
+                    background: lime;
+                    border: none;
+                    cursor: pointer;
+                    border-radius: 5px;
+                }
+            `;
+
+            static properties = {
+                count: { type: Number }
+            };
+
+            constructor() {
+                super();
+                this.count = 0;
+            }
+
+            render() {
+                return html`
+                    <button @click="${this.increment}">Count: ${this.count}</button>
+                `;
+            }
+
+            increment() {
+                this.count++;
+            }
+        }
+
+        customElements.define("my-counter", MyCounter);
+    </script>
+</head>
+<body>
+    <my-counter></my-counter>
+</body>
+</html>

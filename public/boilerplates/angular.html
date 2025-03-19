@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="counterApp">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AngularJS Counter App</title>
+  <link rel="icon" href="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/angular.svg" type="image/svg+xml">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
+  <style>
+    .container {
+      font-family: system-ui, sans-serif;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #dd0031;
+    }
+
+    .counter-container {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background-color: #f8f9fa;
+    }
+
+    .counter {
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: #dd0031;
+    }
+
+    .button-group {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 8px 16px;
+    }
+
+    .increment {
+      background-color: #dd0031;
+    }
+
+    .decrement {
+      background-color: #c3002f;
+    }
+
+    .reset {
+      background-color: #999;
+    }
+  </style>
+</head>
+<body ng-controller="CounterController">
+  <div class="container">
+    <h1>AngularJS Counter App</h1>
+    <div class="counter-container">
+      <p>Current count: <span class="counter">{{ count }}</span></p>
+      <div class="button-group">
+        <button class="btn decrement" ng-click="decrement()">Decrement</button>
+        <button class="btn reset" ng-click="reset()">Reset</button>
+        <button class="btn increment" ng-click="increment()">Increment</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Define the AngularJS application
+    angular.module('counterApp', [])
+      .controller('CounterController', ['$scope', function($scope) {
+        $scope.count = 0;
+
+        $scope.increment = function() {
+          $scope.count++;
+        };
+
+        $scope.decrement = function() {
+          $scope.count--;
+        };
+
+        $scope.reset = function() {
+          $scope.count = 0;
+        };
+      }]);
+  </script>
+</body>
+</html>

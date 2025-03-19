@@ -1,11 +1,10 @@
+<script setup>
+const layout = useState('layout', () => '');
+</script>
 <template>
   <div>
-    <NuxtPage />
+    <NuxtLayout :layout="layout" :key="layout">
+      <NuxtPage />
+    </NuxtLayout>
   </div>
 </template>
-
-<style lang="postcss">
-body {
-  @apply min-h-screen bg-white dark:bg-gray-800 dark:text-gray-200;
-}
-</style>

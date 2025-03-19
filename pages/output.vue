@@ -2,6 +2,12 @@
 import { useEditorStore } from '~/stores/editor'
 import Welcome from '~/components/Welcome.vue'
 
+const layout = useState('layout');
+
+onBeforeMount(() => {
+  layout.value = 'blank';
+})
+
 const { decompress } = useBrotli();
 
 // Disable layout to avoid wrapping
@@ -11,12 +17,13 @@ definePageMeta({
 
 const route = useRoute()
 const editorStore = useEditorStore()
+const code = ref(null)
+const run = ref(false)
 
 onBeforeMount(() => {
-  const code = route.query.code
-  const run = route.query.run === 'true'
-
-  if (code || run) {
+  code.value = route.query.code
+  run.value = route.query.run === 'true'
+  if (code.value || run.value) {
     updateDOM()
   }
 })
@@ -72,5 +79,9 @@ async function updateDOM() {
 </script>
 
 <template>
-  <Welcome v-if="!route.query.code && route.query.run !== 'true'" />
+  <div>
+    <ClientOnly>
+      <Welcome v-if="!code && !run" />
+    </ClientOnly>
+  </div>
 </template>

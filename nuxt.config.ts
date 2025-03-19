@@ -34,10 +34,14 @@ export default defineNuxtConfig({
   // css: ['~/assets/css/tailwind.css'],
   devtools: { enabled: true },
 
+  googleAdsense: {
+    id: 'ca-pub-5908703614902402',
+  },
+
   gtag: {
     enabled: process.env.NODE_ENV === 'production',
     id: 'G-5RVQ9HYPD5'
   },
 
-  modules: ["@nuxt/icon", "@pinia/nuxt", "@nuxtjs/color-mode", "@nuxtjs/tailwindcss", "pinia-plugin-persistedstate/nuxt", "nuxt-codemirror", "@vueuse/nuxt", "nuxt-gtag"],
+  modules: ['@nuxtjs/google-adsense', "@nuxt/icon", "@pinia/nuxt", "@nuxtjs/color-mode", "@nuxtjs/tailwindcss", "pinia-plugin-persistedstate/nuxt", "nuxt-codemirror", "@vueuse/nuxt", "nuxt-gtag"],
 });

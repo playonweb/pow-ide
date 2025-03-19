@@ -17,6 +17,7 @@
     "@codemirror/theme-one-dark": "^6.1.2",
     "@nuxt/icon": "latest",
     "@nuxtjs/color-mode": "latest",
+    "@nuxtjs/google-adsense": "^3.0.0",
     "@nuxtjs/tailwindcss": "latest",
     "@pinia/nuxt": "latest",
     "@vueuse/integrations": "^13.0.0",

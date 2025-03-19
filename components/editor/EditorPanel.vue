@@ -196,6 +196,29 @@ const setupEditor = () => {
   const extensions = [
     basicSetup,
     html(),
+    EditorView.theme({
+      "&": {
+        backgroundColor: isDarkMode.value ? "#282c34" : "#ffffff",
+        color: isDarkMode.value ? "#abb2bf" : "#24292e"
+      },
+      ".cm-content": {
+        caretColor: isDarkMode.value ? "#528bff" : "#000000"
+      },
+      ".cm-cursor": {
+        borderLeftColor: isDarkMode.value ? "#528bff" : "#000000"
+      },
+      "&.cm-focused .cm-cursor": {
+        borderLeftColor: isDarkMode.value ? "#528bff" : "#000000"
+      },
+      ".cm-selectionBackground": {
+        backgroundColor: isDarkMode.value ? "#3E4451" : "#b3d4fc"
+      },
+      ".cm-gutters": {
+        backgroundColor: isDarkMode.value ? "#282c34" : "#f6f8fa",
+        color: isDarkMode.value ? "#495162" : "#6e7781",
+        border: "none"
+      }
+    }),
     EditorView.updateListener.of(update => {
       if (update.docChanged) {
         const newValue = update.state.doc.toString();

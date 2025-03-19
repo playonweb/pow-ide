@@ -345,7 +345,13 @@ watch(isDarkMode, async () => {
 watch(isFullscreen, async () => {
   await nextTick();
   if (editorView.value) {
-    editorView.value.requestMeasure();
+    // Allow time for the DOM to update before triggering a remeasure
+    setTimeout(() => {
+      editorView.value.requestMeasure();
+      // Force a refresh of the editor layout
+      const view = editorView.value;
+      view.dispatch({});
+    }, 100);
   }
 });
 
@@ -369,71 +375,3 @@ onUnmounted(() => {
   }
 });
 </script>
-
-<style>
-/* Base editor styles */
-.cm-editor {
-  height: 100%;
-}
-
-.cm-editor.cm-focused {
-  outline: none !important;
-}
-
-/* Make sure dark mode background gets applied */
-.bg-gray-800 .cm-editor,
-.dark .cm-editor {
-  background-color: #1e293b !important; /* Tailwind's gray-800 */
-}
-
-.bg-gray-800 .cm-content,
-.dark .cm-content {
-  background-color: #1e293b !important;
-  color: #e2e8f0 !important; /* Tailwind's gray-200 */
-}
-
-.bg-gray-800 .cm-scroller,
-.dark .cm-scroller {
-  background-color: #1e293b !important;
-}
-
-.bg-gray-800 .cm-gutters,
-.dark .cm-gutters {
-  background-color: #1a2234 !important; /* Slightly darker than gray-800 */
-  color: #94a3b8 !important; /* Tailwind's gray-400 */
-  border-right: 1px solid #334155 !important; /* Tailwind's gray-600 */
-}
-
-/* Ensure proper rendering in dark mode */
-.bg-gray-800 .cm-cursor,
-.dark .cm-cursor {
-  border-left-color: #e2e8f0 !important; /* Make cursor visible in dark mode */
-}
-
-/* Tag styling for HTML */
-.bg-gray-800 .cm-tag,
-.dark .cm-tag {
-  color: #93c5fd !important; /* Tailwind's blue-300 */
-}
-
-.bg-gray-800 .cm-attribute,
-.dark .cm-attribute {
-  color: #86efac !important; /* Tailwind's green-300 */
-}
-
-.bg-gray-800 .cm-string,
-.dark .cm-string {
-  color: #fcd34d !important; /* Tailwind's yellow-300 */
-}
-
-/* Style active line and selections */
-.bg-gray-800 .cm-line.cm-activeLine,
-.dark .cm-line.cm-activeLine {
-  background-color: rgba(255, 255, 255, 0.06) !important;
-}
-
-.bg-gray-800 .cm-selectionBackground,
-.dark .cm-selectionBackground {
-  background-color: rgba(30, 64, 175, 0.3) !important; /* Tailwind's blue-800 at 30% opacity */
-}
-</style>

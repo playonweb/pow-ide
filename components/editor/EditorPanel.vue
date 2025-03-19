@@ -103,7 +103,7 @@
       class="relative w-full h-[300px] sm:h-[400px] md:h-[calc(100vh-300px)] lg:h-[calc(100vh-200px)] border border-gray-300 dark:border-gray-700 rounded-b-lg overflow-hidden"
       :class="{ '!h-[calc(100vh-44px)] !max-h-[calc(100vh-44px)]': isFullscreen }">
       <ClientOnly>
-        <div :class="{'bg-white': !isDarkMode, 'bg-gray-800': isDarkMode}" class="w-full h-full">
+        <div class="w-full h-full">
           <div ref="editorContainer" class="w-full h-full rounded-b-lg" :class="{'dark-editor': isDarkMode}"></div>
         </div>
         <template #fallback>

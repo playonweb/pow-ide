@@ -1,6 +1,4 @@
 <script setup>
-import { onMounted } from 'vue'
-import { useRoute } from 'nuxt/app'
 import { useEditorStore } from '~/stores/editor'
 import Welcome from '~/components/Welcome.vue'
 
@@ -14,7 +12,7 @@ definePageMeta({
 const route = useRoute()
 const editorStore = useEditorStore()
 
-onMounted(() => {
+onBeforeMount(() => {
   const code = route.query.code
   const run = route.query.run === 'true'
 

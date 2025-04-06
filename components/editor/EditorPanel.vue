@@ -32,13 +32,13 @@
         <div class="flex items-center gap-1 sm:gap-2">
           <span class="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Live</span>
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" v-model="liveSync" class="sr-only peer" />
+            <input type="checkbox" v-model="liveRun" class="sr-only peer" />
             <div
               class="w-9 sm:w-11 h-5 sm:h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 sm:after:h-5 after:w-4 sm:after:w-5 after:transition-all peer-checked:bg-blue-500 dark:peer-checked:bg-blue-600">
             </div>
           </label>
         </div>
-        <button @click="runCode" :disabled="liveSync"
+        <button @click="runCode" v-show="!liveRun"
           class="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
           Run
         </button>
@@ -71,14 +71,14 @@
             <div class="flex items-center justify-between gap-2">
               <span class="text-sm text-gray-700 dark:text-gray-300">Live Updates</span>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="liveSync" class="sr-only peer" />
+                <input type="checkbox" v-model="liveRun" class="sr-only peer" />
                 <div
                   class="w-9 h-5 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500 dark:peer-checked:bg-blue-600">
                 </div>
               </label>
             </div>
           </div>
-          <button @click="runCode" :disabled="liveSync"
+          <button @click="runCode" v-show="!liveRun"
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:hover:bg-white dark:disabled:hover:bg-gray-700 disabled:cursor-not-allowed">
             Run Code
           </button>
@@ -118,7 +118,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick, onUnmounted } from 'vue'
-import { useFullscreen, useMagicKeys } from '@vueuse/core'
+import { useFullscreen, useEventListener, useMagicKeys } from '@vueuse/core'
 import { useColorMode } from '#imports'
 import { EditorView, basicSetup } from 'codemirror'
 import { html } from '@codemirror/lang-html'
@@ -126,15 +126,15 @@ import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorState } from '@codemirror/state'
 import EditorDropdownMenu from './EditorDropdownMenu.vue'
 import BoilerplateMenu from './BoilerplateMenu.vue'
+import { useEditorStore } from '~/stores/editor'
+
+// Connect to the store
+const editorStore = useEditorStore()
 
 const props = defineProps({
   modelValue: {
     type: String,
     default: ''
-  },
-  liveSync: {
-    type: Boolean,
-    default: false
   },
   isOutputFull: {
     type: Boolean,
@@ -142,7 +142,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'update:liveSync', 'run', 'share', 'switch-to-output'])
+const emit = defineEmits(['update:modelValue', 'run', 'share', 'switch-to-output'])
 
 // Template refs
 const container = ref(null)
@@ -161,11 +161,12 @@ const isDarkMode = computed({
   }
 })
 
-// Binding live sync
-const liveSync = computed({
-  get: () => props.liveSync,
+// Directly connect to the liveRun property in the store
+const liveRun = computed({
+  get: () => editorStore.liveRun,
   set: (value) => {
-    emit('update:liveSync', value)
+    editorStore.setLiveRun(value)
+    if(value==true) emit('run');
   }
 })
 
@@ -180,7 +181,7 @@ const { ctrl_v, meta_v } = keys
 const isPaste = computed(() => ctrl_v.value || meta_v.value)
 
 watch(isPaste, (newValue) => {
-  if (newValue && liveSync.value) {
+  if (newValue && liveRun.value) {
     // Small delay to allow editor to update with pasted content
     setTimeout(() => {
       runCode();
@@ -223,7 +224,8 @@ const setupEditor = () => {
       if (update.docChanged) {
         const newValue = update.state.doc.toString();
         emit('update:modelValue', newValue);
-        if (liveSync.value) {
+        
+        if (liveRun.value) {
           emit('run');
         }
       }

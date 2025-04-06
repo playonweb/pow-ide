@@ -7,7 +7,6 @@ export function useEditor() {
   const route = useRoute()
   const router = useRouter()
   const editorStore = useEditorStore()
-  const liveSync = ref(false)
   const { compress, decompress } = useBrotli()
   const { generateQr } = useQr()
 
@@ -70,7 +69,6 @@ export function useEditor() {
   }
 
   return {
-    liveSync,
     getCodeFromUrl,
     loadEditorFromUrl,
     shareCode,

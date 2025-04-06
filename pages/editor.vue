@@ -13,7 +13,6 @@
                 <EditorPanel
                     ref="editorPanel"
                     v-model="editorStore.htmlCode"
-                    v-model:liveSync="liveSync"
                     :isOutputFull="isOutputFull"
                     @run="updateOutput"
                     @share="shareCode"
@@ -44,7 +43,7 @@ import OutputPanel from '~/components/editor/OutputPanel.vue'
 import { useEditorStore } from '~/stores/editor'
 
 // Setup editor functionality
-const { liveSync, loadEditorFromUrl, shareCode, shareOutput } = useEditor()
+const { loadEditorFromUrl, shareCode, shareOutput } = useEditor()
 const editorStore = useEditorStore()
 // Template refs
 const editorPanel = ref(null)
@@ -74,7 +73,7 @@ const switchToEditor = async () => {
 // Watch htmlCode from store for live updates
 watch(() => editorStore.htmlCode, () => {
     useRouter().replace({ path: useRoute.path, query: {} })
-    if (liveSync.value) {
+    if (editorStore.liveRun) {
         updateOutput()
     }
 })

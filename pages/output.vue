@@ -8,7 +8,7 @@ onBeforeMount(() => {
   layout.value = 'blank';
 })
 
-const { decompress } = useBrotli();
+const { getCodeFromUrl } = useEditor()
 
 // Disable layout to avoid wrapping
 definePageMeta({
@@ -20,8 +20,8 @@ const editorStore = useEditorStore()
 const code = ref(null)
 const run = ref(false)
 
-onBeforeMount(() => {
-  code.value = route.query.code
+onBeforeMount(async () => {
+  code.value = await getCodeFromUrl()
   run.value = route.query.run === 'true'
   if (code.value || run.value) {
     updateDOM()
@@ -29,8 +29,7 @@ onBeforeMount(() => {
 })
 
 async function updateDOM() {
-  const code = route.query.code
-  const htmlContent = code ? await decompress(decodeURIComponent(code)) : editorStore.htmlCode
+  const htmlContent = code.value || editorStore.htmlCode
 
   // Parse the HTML content to extract title and favicon
   const parser = new DOMParser()
@@ -81,7 +80,7 @@ async function updateDOM() {
 <template>
   <div>
     <ClientOnly>
-      <Welcome v-if="!code && !run" />
+        <Welcome v-if="!code && !run" />
     </ClientOnly>
   </div>
 </template>

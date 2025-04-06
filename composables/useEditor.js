@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import { useRoute, useRouter } from 'nuxt/app'
 import { useEditorStore } from '~/stores/editor'
@@ -8,52 +8,62 @@ export function useEditor() {
   const router = useRouter()
   const editorStore = useEditorStore()
   const liveSync = ref(false)
-  const { compress, decompress } = useBrotli();
-  const { generateQr } = useQr();
+  const { compress, decompress } = useBrotli()
+  const { generateQr } = useQr()
 
-  // Debounced update for URL sharing
+  // DEPRECATED: Debounced update for URL sharing
   const debouncedUpdateUrl = useDebounceFn(() => {
     updateUrlWithCode()
   }, 500)
 
-  // Function to update URL with current code
-  const updateUrlWithCode = () => {
-    const encodedCode = encodeURIComponent(editorStore.htmlCode)
+  // Function to update URL with current code using hash
+  const updateUrlWithCode = async () => {
+    const compressedCode = await compress(editorStore.htmlCode)
+    const encodedCode = encodeURIComponent(compressedCode)
     router.push({
-      query: {
-        ...route.query, // Preserve other query params
-        code: encodedCode
-      }
+      hash: `#code=${encodedCode}`
     })
   }
 
-  // Function to load code from URL
-  const loadCodeFromUrl = async () => {
-    const code = route.query.code
-    if (code) {
-      editorStore.setHtmlCode(await decompress(decodeURIComponent(code)))
+  // Function to load code from URL hash
+  const getCodeFromUrl = async () => {
+    const hash = route.hash.slice(1) // Remove the '#' prefix
+    const params = new URLSearchParams(hash)
+    const compressedCode = params.get('code')
+    if (compressedCode) {
+      const decompressedCode = await decompress(decodeURIComponent(compressedCode))
+      return decompressedCode;
     }
+
+    return '';
   }
 
-  // Share code function
+  const loadEditorFromUrl = async () => {
+      const code = await getCodeFromUrl()
+      if(code) editorStore.setHtmlCode(code)
+  }
+
+  // Share code function using hash
   const shareCode = async () => {
-    const encodedCode = encodeURIComponent(await compress(editorStore.htmlCode))
-    const shareUrl = `${window.location.origin}${route.path}?code=${encodedCode}`
+    const compressedCode = await compress(editorStore.htmlCode)
+    const encodedCode = encodeURIComponent(compressedCode)
+    const shareUrl = `${window.location.origin}${route.path}#code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)
-      generateQr(shareUrl);
+      generateQr(shareUrl)
     } catch (err) {
       console.error('Failed to copy URL: ', err)
     }
   }
 
-  // Share output function
+  // Share output function using hash
   const shareOutput = async () => {
-    const encodedCode = encodeURIComponent(await compress(editorStore.htmlCode))
-    const shareUrl = `${window.location.origin}/output?code=${encodedCode}`
+    const compressedCode = await compress(editorStore.htmlCode)
+    const encodedCode = encodeURIComponent(compressedCode)
+    const shareUrl = `${window.location.origin}/output#code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)
-      generateQr(shareUrl);
+      generateQr(shareUrl)
     } catch (err) {
       console.error('Failed to copy URL: ', err)
     }
@@ -62,10 +72,11 @@ export function useEditor() {
   return {
     editorStore,
     liveSync,
-    loadCodeFromUrl,
+    getCodeFromUrl,
+    loadEditorFromUrl,
     shareCode,
     shareOutput,
     updateUrlWithCode,
     debouncedUpdateUrl
   }
-} 
+}

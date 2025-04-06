@@ -118,7 +118,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick, onUnmounted } from 'vue'
-import { useFullscreen, useEventListener, useMagicKeys } from '@vueuse/core'
+import { useFullscreen, useMagicKeys } from '@vueuse/core'
 import { useColorMode } from '#imports'
 import { EditorView, basicSetup } from 'codemirror'
 import { html } from '@codemirror/lang-html'
@@ -223,7 +223,6 @@ const setupEditor = () => {
       if (update.docChanged) {
         const newValue = update.state.doc.toString();
         emit('update:modelValue', newValue);
-        
         if (liveSync.value) {
           emit('run');
         }

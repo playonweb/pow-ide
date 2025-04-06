@@ -9,5 +9,8 @@ export const useEditorStore = defineStore('editor', {
       this.htmlCode = code
     },
   },
-  persist: true,
+  // persist: true,
+  persist: {
+    storage: piniaPluginPersistedstate.localStorage(),
+  },
 })

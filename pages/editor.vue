@@ -41,10 +41,11 @@
 import EditorHeader from '~/components/editor/EditorHeader.vue'
 import EditorPanel from '~/components/editor/EditorPanel.vue'
 import OutputPanel from '~/components/editor/OutputPanel.vue'
+import { useEditorStore } from '~/stores/editor'
 
 // Setup editor functionality
-const { editorStore, liveSync, loadEditorFromUrl, shareCode, shareOutput } = useEditor()
-
+const { liveSync, loadEditorFromUrl, shareCode, shareOutput } = useEditor()
+const editorStore = useEditorStore()
 // Template refs
 const editorPanel = ref(null)
 const outputPanel = ref(null)
@@ -72,6 +73,7 @@ const switchToEditor = async () => {
 
 // Watch htmlCode from store for live updates
 watch(() => editorStore.htmlCode, () => {
+    useRouter().replace({ path: useRoute.path, query: {} })
     if (liveSync.value) {
         updateOutput()
     }

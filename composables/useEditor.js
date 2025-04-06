@@ -70,7 +70,6 @@ export function useEditor() {
   }
 
   return {
-    editorStore,
     liveSync,
     getCodeFromUrl,
     loadEditorFromUrl,

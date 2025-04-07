@@ -13,7 +13,7 @@ const colorMode = useColorMode()
             </select>
         </p>
         <div class="flex justify-center">
-            <div class="bg-gradient-to-r from-fuchsia-500 to-cyan-500 dark:bg-black w-100 m-4 p-10 rounded-3xl">
+            <div id="editor-container" class="bg-gradient-to-r from-fuchsia-500 to-cyan-500 dark:bg-black w-100 m-4 p-10 rounded-3xl">
                 <h1 class="text-3xl text-center text-white font-bold underline hover:text-pink-200 cursor-pointer">
                     <NuxtLink to="/editor">Open Online HTML Editor</NuxtLink>
                 </h1>

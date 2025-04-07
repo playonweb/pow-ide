@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="flex flex-col">
+  <div id="editor-container" ref="container" class="flex flex-col h-full relative">
     <div class="flex flex-row items-center justify-between p-2 bg-gray-200 dark:bg-gray-700 rounded-t-lg">
       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
         <div class="relative">
@@ -13,11 +13,12 @@
           <BoilerplateMenu v-model="showMenuPopup" @select="loadBoilerplate" />
         </div>
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white">HTML Code</h2>
-        <button v-if="isFullscreen && !isOutputFull" @click="switchToOutput"
+        <!-- Show the switch button if showOutputButton is true -->
+        <button @click="handleSwitchToOutput"
           class="bg-yellow-300 hover:bg-yellow-400 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-gray-800 dark:text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm transition-colors">
-          Output
+          View Output
         </button>
-        <label v-if="isFullscreen" class="relative inline-flex items-center cursor-pointer">
+        <label v-if="fullScreenStore.isEditorFullscreen" class="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" v-model="isDarkMode" class="sr-only peer" />
           <div
             class="w-11 h-6 bg-black peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 dark:peer-focus:ring-blue-400 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500 dark:peer-checked:bg-blue-600">
@@ -50,9 +51,9 @@
           class="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-3 sm:px-4 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm transition-colors">
           {{ shareButtonText }}
         </button>
-        <button @click="toggleFullscreen"
+        <button @click="toggleFullscreenHandler"
           class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white px-2 py-1 transition-colors">
-          <svg v-if="isFullscreen" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+          <svg v-if="fullScreenStore.isEditorFullscreen === true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="feather feather-minimize sm:w-6 sm:h-6">
             <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
@@ -90,18 +91,18 @@
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
             {{ shareButtonText }}
           </button>
-          <button @click="toggleFullscreen"
+          <button @click="toggleFullscreenHandler"
             class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
-            {{ isFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}
+            {{ fullScreenStore.isEditorFullscreen ? 'Exit Fullscreen' : 'Fullscreen' }}
           </button>
         </EditorDropdownMenu>
       </div>
     </div>
     
-    <!-- CodeMirror Editor -->
+    <!-- CodeMirror Editor with better fullscreen handling -->
     <div
-      class="relative w-full h-[300px] sm:h-[400px] md:h-[calc(100vh-300px)] lg:h-[calc(100vh-200px)] border border-gray-300 dark:border-gray-700 rounded-b-lg overflow-hidden"
-      :class="{ '!h-[calc(100vh-44px)] !max-h-[calc(100vh-44px)]': isFullscreen }">
+      class="relative w-full h-[300px] sm:h-[400px] md:h-[calc(100vh-300px)] lg:h-[calc(100vh-200px)] border border-gray-300 dark:border-gray-700 rounded-b-lg overflow-hidden flex-grow"
+      :class="{ '!h-[calc(100vh-60px)] !max-h-[calc(100vh-60px)]': fullScreenStore.isEditorFullscreen }">
       <ClientOnly>
         <div class="w-full h-full">
           <div ref="editorContainer" class="w-full h-full rounded-b-lg" :class="{'dark-editor': isDarkMode}"></div>
@@ -118,7 +119,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, nextTick, onUnmounted } from 'vue'
-import { useFullscreen, useEventListener, useMagicKeys } from '@vueuse/core'
+import { useEventListener, useMagicKeys, useFullscreen } from '@vueuse/core'
 import { useColorMode } from '#imports'
 import { EditorView, basicSetup } from 'codemirror'
 import { html } from '@codemirror/lang-html'
@@ -127,30 +128,39 @@ import { EditorState } from '@codemirror/state'
 import EditorDropdownMenu from './EditorDropdownMenu.vue'
 import BoilerplateMenu from './BoilerplateMenu.vue'
 import { useEditorStore } from '~/stores/editor'
+import { useEditor } from '~/composables/useEditor'
+import { useFullScreenStore } from '~/stores/fullScreenStore'
 
 // Connect to the store
 const editorStore = useEditorStore()
-
-const props = defineProps({
-  modelValue: {
-    type: String,
-    default: ''
-  },
-  isOutputFull: {
-    type: Boolean,
-    default: false
-  }
-})
-
-const emit = defineEmits(['update:modelValue', 'run', 'share', 'switch-to-output'])
+const { shareCode, saveCode, runCode, shareButtonText } = useEditor()
 
 // Template refs
 const container = ref(null)
 const editorContainer = ref(null)
 const editorView = ref(null)
 
-// Fullscreen handling
-const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(container)
+// Use the fullscreen store
+const fullScreenStore = useFullScreenStore()
+
+// Fullscreen handling using vueuse
+const { isFullscreen: isEditorFullscreen, toggle: toggleFullscreen } = useFullscreen(container)
+
+// Replace toggleFullscreen function
+const toggleFullscreenHandler = () => {
+  toggleFullscreen()
+  fullScreenStore.isEditorFullscreen = isEditorFullscreen.value
+}
+
+// Replace handleSwitchToOutput function
+const handleSwitchToOutput = async () => {
+  const success = await fullScreenStore.handleSwitchToOutput()
+  if (success) {
+    setTimeout(() => {
+      runCode()
+    }, 150)
+  }
+}
 
 // Color mode
 const colorMode = useColorMode()
@@ -166,12 +176,9 @@ const liveRun = computed({
   get: () => editorStore.liveRun,
   set: (value) => {
     editorStore.setLiveRun(value)
-    if(value==true) emit('run');
+    if(value==true) runCode();
   }
 })
-
-// Add to the top-level variables in script setup
-const shareButtonText = ref('Share')
 
 // Add keyboard monitoring only for paste event
 const keys = useMagicKeys()
@@ -200,7 +207,9 @@ const setupEditor = () => {
     EditorView.theme({
       "&": {
         backgroundColor: isDarkMode.value ? "#282c34" : "#ffffff",
-        color: isDarkMode.value ? "#abb2bf" : "#24292e"
+        color: isDarkMode.value ? "#abb2bf" : "#24292e",
+        height: "100%", // Ensure editor takes full height
+        overflow: "auto" // Enable scrolling
       },
       ".cm-content": {
         caretColor: isDarkMode.value ? "#528bff" : "#000000"
@@ -223,15 +232,29 @@ const setupEditor = () => {
     EditorView.updateListener.of(update => {
       if (update.docChanged) {
         const newValue = update.state.doc.toString();
-        emit('update:modelValue', newValue);
+        editorStore.setHtmlCode(newValue);
         
         if (liveRun.value) {
-          emit('run');
+          runCode();
         }
       }
     })
   ];
   
+  // Update editor when fullscreen changes
+  watch(editorStore.fullscreenSwitch, async () => {
+    await nextTick();
+    if (editorView.value) {
+      // Allow time for the DOM to update before triggering a remeasure
+      setTimeout(() => {
+        editorView.value.requestMeasure();
+        // Force a refresh of the editor layout
+        const view = editorView.value;
+        view.dispatch({});
+      }, 100);
+    }
+  });
+
   // Only add oneDark theme when in dark mode
   if (isDarkMode.value) {
     extensions.push(oneDark);
@@ -239,7 +262,7 @@ const setupEditor = () => {
   
   // Create the editor state with the appropriate extensions
   const startState = EditorState.create({
-    doc: props.modelValue,
+    doc: editorStore.htmlCode,
     extensions: extensions
   });
 
@@ -248,59 +271,10 @@ const setupEditor = () => {
     state: startState,
     parent: editorContainer.value
   });
-}
 
-// Methods
-const runCode = () => {
-  emit('run');
-}
-
-const shareCode = () => {
-  emit('share')
-  shareButtonText.value = 'Copied!'
-  setTimeout(() => {
-    shareButtonText.value = 'Share'
-  }, 2000)
-}
-
-const saveCode = () => {
-  // Create the HTML content with proper DOCTYPE and structure
-  const fullHtmlContent = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saved HTML</title>
-</head>
-<body>
-${props.modelValue}
-</body>
-</html>`;
-
-  // Create a Blob with the HTML content
-  const blob = new Blob([fullHtmlContent], { type: 'text/html' });
-  
-  // Create a URL for the Blob
-  const url = URL.createObjectURL(blob);
-  
-  // Create a temporary anchor element to trigger the download
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'code.html';
-  
-  // Append to the document, click it, and remove it
-  document.body.appendChild(a);
-  a.click();
-  
-  // Clean up
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 0);
-}
-
-const switchToOutput = () => {
-  emit('switch-to-output');
+  // Ensure scrolling works in fullscreen
+  editorView.value.scrollDOM.style.height = "100%";
+  editorView.value.scrollDOM.style.overflow = "auto";
 }
 
 // Boilerplate menu toggle
@@ -319,7 +293,7 @@ const loadBoilerplate = (fileName) => {
   fetch(`boilerplates/${fileName}`)  // Removed leading slash to make path relative
     .then(res => res.text())
     .then(text => {
-      emit('update:modelValue', text);
+      editorStore.setHtmlCode(text);
       runCode(); // Automatically run the code when loading a boilerplate
     })
     .catch(err => {
@@ -327,8 +301,24 @@ const loadBoilerplate = (fileName) => {
     });
 }
 
-// Update editor content when modelValue changes externally
-watch(() => props.modelValue, (newValue) => {
+// Watch for fullscreen switch events
+watch(() => editorStore.fullscreenSwitch, async (newVal, oldVal) => {
+  if (newVal !== oldVal && fullScreenStore.isEditorFullscreen) {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen()
+    }
+    // Request fullscreen on this container after a brief delay
+    setTimeout(() => {
+      if (container.value && container.value.requestFullscreen) {
+        container.value.requestFullscreen()
+          .catch(err => console.error("Error attempting to enable fullscreen:", err))
+      }
+    }, 100)
+  }
+})
+
+// Update editor content when htmlCode in store changes
+watch(() => editorStore.htmlCode, (newValue) => {
   if (editorView.value && newValue !== editorView.value.state.doc.toString()) {
     editorView.value.dispatch({
       changes: {
@@ -362,22 +352,26 @@ watch(isDarkMode, async () => {
         console.warn('Could not restore selection after theme change', e);
       }
     }
+
+    // Ensure theme is applied correctly in fullscreen
+    editorView.value.scrollDOM.style.height = "100%";
+    editorView.value.scrollDOM.style.overflow = "auto";
   }
 });
 
-// Update editor when fullscreen changes
-watch(isFullscreen, async () => {
-  await nextTick();
+// Watch for fullscreen changes to update editor layout
+watch(() => fullScreenStore.isEditorFullscreen, async (newValue) => {
+  await nextTick()
   if (editorView.value) {
     // Allow time for the DOM to update before triggering a remeasure
     setTimeout(() => {
-      editorView.value.requestMeasure();
+      editorView.value.requestMeasure()
       // Force a refresh of the editor layout
-      const view = editorView.value;
-      view.dispatch({});
-    }, 100);
+      const view = editorView.value
+      view.dispatch({})
+    }, 100)
   }
-});
+})
 
 // Initialize editor on component mount
 onMounted(() => {
@@ -386,12 +380,6 @@ onMounted(() => {
   });
 });
 
-// Expose methods for parent component
-defineExpose({
-  toggleFullscreen,
-  isFullscreen
-})
-
 // Clean up only the editor view on unmount
 onUnmounted(() => {
   if (editorView.value) {
@@ -399,7 +387,7 @@ onUnmounted(() => {
   }
 });
 </script>
-<style>
+<style scoped>
 /* Dirty fix editor scrollbar */
 .cm-editor {
   height: 100%;

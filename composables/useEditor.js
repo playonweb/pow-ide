@@ -27,7 +27,8 @@ export function useEditor() {
   // Function to update URL with current code using hash
   const updateUrlWithCode = async () => {
     const compressedCode = await compress(editorStore.htmlCode)
-    const encodedCode = encodeURIComponent(compressedCode)
+    const base64CompressedCode = btoa(compressedCode)  // Convert to Base64
+    const encodedCode = encodeURIComponent(base64CompressedCode)  // Encode URI
     router.push({
       hash: `#code=${encodedCode}`
     })
@@ -37,24 +38,24 @@ export function useEditor() {
   const getCodeFromUrl = async () => {
     const hash = route.hash.slice(1) // Remove the '#' prefix
     const params = new URLSearchParams(hash)
-    const compressedCode = params.get('code')
-    if (compressedCode) {
-      const decompressedCode = await decompress(decodeURIComponent(compressedCode))
-      return decompressedCode;
+    const base64CompressedCode = params.get('code')
+    if (base64CompressedCode) {
+      const compressedCode = atob(decodeURIComponent(base64CompressedCode))  // Decode Base64 and URI
+      return await decompress(compressedCode)  // Decompress the code
     }
-
-    return '';
+    return ''
   }
 
   const loadEditorFromUrl = async () => {
-      const code = await getCodeFromUrl()
-      if(code) editorStore.setHtmlCode(code)
+    const code = await getCodeFromUrl()
+    if(code) editorStore.setHtmlCode(code)
   }
 
   // Share code function using hash
   const shareCode = async () => {
     const compressedCode = await compress(editorStore.htmlCode)
-    const encodedCode = encodeURIComponent(compressedCode)
+    const base64CompressedCode = btoa(compressedCode)  // Convert to Base64
+    const encodedCode = encodeURIComponent(base64CompressedCode)  // Encode URI
     const shareUrl = `${window.location.origin}${route.path}#code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)
@@ -71,7 +72,8 @@ export function useEditor() {
   // Share output function using hash
   const shareOutput = async () => {
     const compressedCode = await compress(editorStore.htmlCode)
-    const encodedCode = encodeURIComponent(compressedCode)
+    const base64CompressedCode = btoa(compressedCode)  // Convert to Base64
+    const encodedCode = encodeURIComponent(base64CompressedCode)  // Encode URI
     const shareUrl = `${window.location.origin}/output#code=${encodedCode}`
     try {
       await navigator.clipboard.writeText(shareUrl)

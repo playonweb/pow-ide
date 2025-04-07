@@ -108,7 +108,8 @@ import { useFullscreen } from '@vueuse/core'
 const container = ref(null)
 const outputFrame = ref(null)
 const editorStore = useEditorStore()
-const { shareOutput, updateOutput, shareButtonText } = useEditor()
+
+const { getCodeFromUrl, shareOutput, updateOutput, shareButtonText } = useEditor()
 
 // Use the fullscreen store
 const fullScreenStore = useFullScreenStore()
@@ -126,20 +127,19 @@ const handleSwitchToEditor = async () => {
   await fullScreenStore.handleSwitchToEditor()
 }
 
-// Ensure iframe content is loaded when switching to output
-const handleSwitchToOutput = async () => {
-  const success = await fullScreenStore.handleSwitchToOutput()
-  if (success && outputFrame.value) {
-    // Reload iframe content
-    outputFrame.value.src = '/output?run=true'
-  }
+const outputIframe = async () => {
+  const htmlContent = editorStore.htmlCode || '<h1>No content available</h1>'
+  const blob = new Blob([htmlContent], { type: 'text/html' })
+  outputFrame.value.src = URL.createObjectURL(blob)
 }
 
 // Initialize iframe content on mount
-onMounted(() => {
-  if (outputFrame.value) {
-    outputFrame.value.src = '/output?run=true'
+onMounted(async () => {
+  const code = await getCodeFromUrl()
+  if (code) {
+    editorStore.htmlCode = code
   }
+  outputIframe()
 })
 
 const toggleOutputTheme = () => {
@@ -147,8 +147,10 @@ const toggleOutputTheme = () => {
   updateOutput()
 }
 
-const openInNewTab = () => {
-  window.open('/output?run=true', 'output')
+const openInNewTab = async () => {
+  const htmlContent = editorStore.htmlCode || '<h1>No content available</h1>'
+  const blob = new Blob([htmlContent], { type: 'text/html' })
+  window.open(URL.createObjectURL(blob), '_run')
 }
 
 const takeScreenshot = () => {

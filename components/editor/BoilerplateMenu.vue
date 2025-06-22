@@ -149,19 +149,19 @@ const templates = [
   },
   {
     id: 10,
+    name: 'Turbo - Rails',
+    slug: 'turbo',
+    description: 'HTML over the wire',
+    file: 'turbo.html',
+    icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/turbo.svg'
+  },
+  {
+    id: 11,
     name: 'Firebase',
     slug: 'firebase',
     description: 'Real-time database & auth',
     file: 'firebase.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/firebase.svg'
-  },
-  {
-    id: 11,
-    name: 'Google Drive',
-    slug: 'google-drive',
-    description: 'Google Drive API integration',
-    file: 'google-drive.html',
-    icon: 'https://drive.google.com/favicon.ico'
   },
   {
     id: 12,
@@ -194,6 +194,14 @@ const templates = [
     description: '3D graphics in the browser',
     file: 'threejs.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/threedotjs.svg'
+  },
+  {
+    id: 16,
+    name: 'Google Drive',
+    slug: 'google-drive',
+    description: 'Google Drive API integration',
+    file: 'google-drive.html',
+    icon: 'https://drive.google.com/favicon.ico'
   },
 ];
 
@@ -255,7 +263,7 @@ onMounted(() => {
       selectBoilerplate(template.file);
     }
   }
-  // remove all query parameters from the URL
+
   if (window.history.replaceState) {
     const url = new URL(window.location.href);
     url.search = '';

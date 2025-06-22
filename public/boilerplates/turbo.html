@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Turbo.js Cheat Sheet</title>
+  <link rel="icon" href="https://unpkg.com/simple-icons/icons/hotwire.svg" type="image/svg+xml" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.13/dist/turbo.es2017-umd.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+  <!-- Fixed Navigation -->
+  <nav class="fixed top-0 left-0 right-0 bg-white shadow-sm border-b z-40 p-4">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold text-blue-600">🚀 Turbo.js Cheat Sheet</h1>
+      <div class="space-x-4">
+        <a href="#drive" class="text-sm text-gray-600 hover:text-blue-600">Drive</a>
+        <a href="#frames" class="text-sm text-gray-600 hover:text-blue-600">Frames</a>
+        <a href="#streams" class="text-sm text-gray-600 hover:text-blue-600">Streams</a>
+        <a href="#events" class="text-sm text-gray-600 hover:text-blue-600">Events</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Visit Counter (Persistent across navigations) -->
+  <div id="visit-counter" data-turbo-permanent class="fixed top-20 right-4 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm shadow">
+    Visits: <span id="visit-count">0</span>
+  </div>
+
+  <div class="max-w-6xl mx-auto pt-24 pb-8 px-4 space-y-8">
+    
+    <!-- 1. TURBO DRIVE -->
+    <section id="drive" class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-2xl font-bold mb-4 text-blue-600">🚗 Turbo Drive</h2>
+      <p class="text-sm text-gray-500 mb-4">Note: Turbo Drive does not work on this single page example.</p>
+      <p class="text-gray-600 mb-6">Turbo Drive enhances navigation by intercepting link clicks and form submissions, allowing for faster page transitions without full reloads.</p>
+      <!-- Basic Navigation -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Basic Navigation</h3>
+        <p class="text-gray-600 mb-3">Turbo Drive intercepts link clicks and form submissions for faster navigation.</p>
+        <div class="space-x-2">
+          <a href="?page=home" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Home</a>
+          <a href="?page=about" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">About</a>
+          <a href="?page=contact" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Contact</a>
+        </div>
+        <div id="page-content" class="mt-4 p-4 bg-gray-100 rounded">
+          <p>Welcome to the home page!</p>
+        </div>
+      </div>
+
+      <!-- Turbo Attributes -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Turbo Attributes</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <a href="?slow=true" data-turbo="false" class="bg-red-500 text-white px-4 py-2 rounded inline-block">
+              Disabled Turbo (Full Reload)
+            </a>
+            <p class="text-sm text-gray-600 mt-1">data-turbo="false"</p>
+          </div>
+          <div>
+            <a href="?method=post" data-turbo-method="post" class="bg-green-500 text-white px-4 py-2 rounded inline-block">
+              POST Request
+            </a>
+            <p class="text-sm text-gray-600 mt-1">data-turbo-method="post"</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Permanent Elements -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Permanent Elements</h3>
+        <div id="permanent-demo" data-turbo-permanent class="bg-yellow-100 p-4 rounded border-2 border-yellow-300">
+          <p class="font-semibold">This element persists across navigations!</p>
+          <p class="text-sm">Current time: <span id="permanent-time"></span></p>
+        </div>
+      </div>
+
+      <!-- Code Example -->
+      <div class="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto">
+        <pre class="text-sm"><code>&lt;a href="/page" data-turbo-method="post"&gt;POST Link&lt;/a&gt;
+&lt;div data-turbo-permanent id="persistent"&gt;Stays across navigations&lt;/div&gt;
+&lt;a href="/external" data-turbo="false"&gt;Full page reload&lt;/a&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- 2. TURBO FRAMES -->
+    <section id="frames" class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-2xl font-bold mb-4 text-green-600">🖼️ Turbo Frames</h2>
+      
+      <!-- Basic Frame -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Basic Frame</h3>
+        <turbo-frame id="basic-frame" class="block border-2 border-green-300 rounded p-4 bg-green-50">
+          <p class="mb-2">This is a Turbo Frame. Links and forms inside update only this frame.</p>
+          <button onclick="updateFrame('basic-frame', 'Frame updated at ' + new Date().toLocaleTimeString())" 
+                  class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+            Update Frame
+          </button>
+        </turbo-frame>
+      </div>
+
+      <!-- Lazy Loading Frame -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Lazy Loading Frame</h3>
+        <turbo-frame id="lazy-frame" src="data:text/html,<p>Lazy loaded content!</p>" loading="lazy" 
+                     class="block border-2 border-blue-300 rounded p-4 bg-blue-50 min-h-20">
+          <p class="text-gray-500">Loading...</p>
+        </turbo-frame>
+      </div>
+
+      <!-- Targeted Frame -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Targeted Frame Updates</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <button onclick="updateFrame('target-frame', 'Updated from outside!')" 
+                    class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+              Update Target Frame
+            </button>
+          </div>
+          <turbo-frame id="target-frame" class="block border-2 border-purple-300 rounded p-4 bg-purple-50">
+            <p>Target frame content</p>
+          </turbo-frame>
+        </div>
+      </div>
+
+      <!-- Code Example -->
+      <div class="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto">
+        <pre class="text-sm"><code>&lt;turbo-frame id="messages"&gt;
+  &lt;a href="/messages/1"&gt;Load Message 1&lt;/a&gt;
+&lt;/turbo-frame&gt;
+
+&lt;turbo-frame id="lazy-content" src="/slow-content" loading="lazy"&gt;
+  Loading...
+&lt;/turbo-frame&gt;
+
+&lt;a href="/update" data-turbo-frame="messages"&gt;Update from outside&lt;/a&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- 3. TURBO STREAMS -->
+    <section id="streams" class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-2xl font-bold mb-4 text-purple-600">🌊 Turbo Streams</h2>
+      
+      <!-- Stream Actions Demo -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Stream Actions</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+          <button onclick="performStreamAction('append')" class="bg-blue-500 text-white px-3 py-2 rounded text-sm">Append</button>
+          <button onclick="performStreamAction('prepend')" class="bg-green-500 text-white px-3 py-2 rounded text-sm">Prepend</button>
+          <button onclick="performStreamAction('replace')" class="bg-yellow-500 text-white px-3 py-2 rounded text-sm">Replace</button>
+          <button onclick="performStreamAction('update')" class="bg-purple-500 text-white px-3 py-2 rounded text-sm">Update</button>
+          <button onclick="performStreamAction('remove')" class="bg-red-500 text-white px-3 py-2 rounded text-sm">Remove</button>
+          <button onclick="performStreamAction('before')" class="bg-indigo-500 text-white px-3 py-2 rounded text-sm">Before</button>
+          <button onclick="performStreamAction('after')" class="bg-pink-500 text-white px-3 py-2 rounded text-sm">After</button>
+          <button onclick="clearStreamTarget()" class="bg-gray-500 text-white px-3 py-2 rounded text-sm">Clear</button>
+        </div>
+        <div id="stream-container" class="border-2 border-purple-300 rounded p-4 bg-purple-50 min-h-32">
+          <div id="stream-target" class="bg-white p-3 rounded mb-2">
+            <p class="font-semibold">Original Content</p>
+            <p class="text-sm text-gray-600">This is the target for stream operations</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multiple Streams -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Multiple Stream Targets</h3>
+        <button onclick="performMultipleStreams()" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 mb-4">
+          Update Multiple Targets
+        </button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div id="stream-target-1" class="bg-red-100 p-4 rounded border">Target 1</div>
+          <div id="stream-target-2" class="bg-green-100 p-4 rounded border">Target 2</div>
+          <div id="stream-target-3" class="bg-blue-100 p-4 rounded border">Target 3</div>
+        </div>
+      </div>
+
+      <!-- Code Example -->
+      <div class="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto">
+        <pre class="text-sm"><code>&lt;turbo-stream action="append" target="messages"&gt;
+  &lt;template&gt;
+    &lt;div class="message"&gt;New message&lt;/div&gt;
+  &lt;/template&gt;
+&lt;/turbo-stream&gt;
+
+&lt;turbo-stream action="update" target="counter"&gt;
+  &lt;template&gt;Count: 42&lt;/template&gt;
+&lt;/turbo-stream&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- 4. TURBO EVENTS -->
+    <section id="events" class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-2xl font-bold mb-4 text-orange-600">⚡ Turbo Events</h2>
+      
+      <!-- Event Log -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Event Monitor</h3>
+        <div class="flex space-x-2 mb-4">
+          <button onclick="clearEventLog()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Clear Log</button>
+          <button onclick="triggerNavigation()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Trigger Navigation</button>
+        </div>
+        <div id="event-log" class="bg-gray-100 p-4 rounded max-h-48 overflow-y-auto text-sm font-mono">
+          <p class="text-gray-600">Turbo events will appear here...</p>
+        </div>
+      </div>
+
+      <!-- Event Examples -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Common Event Patterns</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-gray-50 p-4 rounded">
+            <h4 class="font-semibold mb-2">Loading States</h4>
+            <button onclick="showLoadingDemo()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              Demo Loading
+            </button>
+            <div id="loading-demo" class="mt-2 text-sm text-gray-600">Click to see loading state</div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded">
+            <h4 class="font-semibold mb-2">Form Submission</h4>
+            <form onsubmit="handleFormSubmit(event)" class="space-y-2">
+              <input type="text" placeholder="Enter text" class="w-full p-2 border rounded" />
+              <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Code Example -->
+      <div class="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto">
+        <pre class="text-sm"><code>// Turbo Events
+document.addEventListener('turbo:load', () => {
+  console.log('Page loaded');
+});
+
+document.addEventListener('turbo:before-visit', (event) => {
+  console.log('About to visit:', event.detail.url);
+});
+
+document.addEventListener('turbo:submit-start', () => {
+  showSpinner();
+});
+
+document.addEventListener('turbo:submit-end', () => {
+  hideSpinner();
+});</code></pre>
+      </div>
+    </section>
+
+    <!-- 5. ADVANCED FEATURES -->
+    <section class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-2xl font-bold mb-4 text-indigo-600">🚀 Advanced Features</h2>
+      
+      <!-- Progress Bar -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Progress Bar</h3>
+        <button onclick="showProgressBar()" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">
+          Show Progress Bar
+        </button>
+        <p class="text-sm text-gray-600 mt-2">Custom progress bar appears at top of page during navigation</p>
+      </div>
+
+      <!-- Morphing -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Page Morphing</h3>
+        <div id="morph-demo" class="bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded transition-all duration-500">
+          <p class="font-semibold">Morphing Content</p>
+          <p class="text-sm">This content can be morphed smoothly</p>
+        </div>
+        <button onclick="morphContent()" class="mt-2 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+          Morph Content
+        </button>
+      </div>
+
+      <!-- Refresh Method -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold mb-2">Programmatic Navigation</h3>
+        <div class="space-x-2">
+          <button onclick="Turbo.visit('?programmatic=true')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Turbo.visit()
+          </button>
+          <button onclick="window.location.reload()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+            Hard Reload
+          </button>
+        </div>
+      </div>
+
+      <!-- Code Example -->
+      <div class="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto">
+        <pre class="text-sm"><code>// Programmatic navigation
+Turbo.visit('/some-page');
+Turbo.visit('/some-page', { action: 'replace' });
+
+// Custom progress bar
+Turbo.setProgressBarDelay(500);
+
+// Refresh page
+Turbo.visit(window.location.href, { action: 'replace' });</code></pre>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Initialize visit counter
+    let visitCount = 0;
+    
+    // Event listeners for Turbo events
+    const eventLog = [];
+    
+    function logEvent(eventName, details = '') {
+      const timestamp = new Date().toLocaleTimeString();
+      eventLog.push(`[${timestamp}] ${eventName} ${details}`);
+      updateEventLog();
+    }
+    
+    function updateEventLog() {
+      const logElement = document.getElementById('event-log');
+      if (logElement) {
+        logElement.innerHTML = eventLog.slice(-10).map(entry => `<p>${entry}</p>`).join('');
+        logElement.scrollTop = logElement.scrollHeight;
+      }
+    }
+    
+    // Turbo event listeners
+    document.addEventListener('turbo:load', () => {
+      visitCount++;
+      document.getElementById('visit-count').textContent = visitCount;
+      updatePermanentTime();
+      updatePageContent();
+      logEvent('turbo:load');
+    });
+    
+    document.addEventListener('turbo:before-visit', (event) => {
+      logEvent('turbo:before-visit', event.detail.url);
+    });
+    
+    document.addEventListener('turbo:visit', (event) => {
+      logEvent('turbo:visit', event.detail.url);
+    });
+    
+    document.addEventListener('turbo:before-cache', () => {
+      logEvent('turbo:before-cache');
+    });
+    
+    document.addEventListener('turbo:before-render', () => {
+      logEvent('turbo:before-render');
+    });
+    
+    document.addEventListener('turbo:render', () => {
+      logEvent('turbo:render');
+    });
+    
+    document.addEventListener('turbo:before-stream-render', (event) => {
+      logEvent('turbo:before-stream-render', event.target.action);
+    });
+    
+    // Update permanent time
+    function updatePermanentTime() {
+      const timeElement = document.getElementById('permanent-time');
+      if (timeElement) {
+        timeElement.textContent = new Date().toLocaleTimeString();
+      }
+    }
+    
+    // Update page content based on URL
+    function updatePageContent() {
+      const params = new URLSearchParams(window.location.search);
+      const page = params.get('page') || 'home';
+      const contentElement = document.getElementById('page-content');
+      
+      if (contentElement) {
+        const content = {
+          home: 'Welcome to the home page!',
+          about: 'This is the about page. Learn more about Turbo.js here.',
+          contact: 'Contact us at hello@turbo.js'
+        };
+        contentElement.innerHTML = `<p>${content[page] || content.home}</p>`;
+      }
+    }
+    
+    // Stream operations
+    function performStreamAction(action) {
+      const target = 'stream-target';
+      const timestamp = new Date().toLocaleTimeString();
+      let content = '';
+      
+      switch (action) {
+        case 'append':
+          content = `<div class="bg-blue-100 p-2 rounded mt-2">Appended at ${timestamp}</div>`;
+          break;
+        case 'prepend':
+          content = `<div class="bg-green-100 p-2 rounded mb-2">Prepended at ${timestamp}</div>`;
+          break;
+        case 'replace':
+          content = `<div class="bg-yellow-100 p-3 rounded"><p class="font-semibold">Replaced Content</p><p class="text-sm">Replaced at ${timestamp}</p></div>`;
+          break;
+        case 'update':
+          content = `<p class="font-semibold">Updated Content</p><p class="text-sm text-gray-600">Updated at ${timestamp}</p>`;
+          break;
+        case 'remove':
+          content = '';
+          break;
+        case 'before':
+          content = `<div class="bg-indigo-100 p-2 rounded mb-2">Before element at ${timestamp}</div>`;
+          break;
+        case 'after':
+          content = `<div class="bg-pink-100 p-2 rounded mt-2">After element at ${timestamp}</div>`;
+          break;
+      }
+      
+      if (action === 'remove') {
+        const streamHTML = `<turbo-stream action="${action}" target="${target}"></turbo-stream>`;
+        document.body.insertAdjacentHTML('beforeend', streamHTML);
+      } else {
+        const streamHTML = `<turbo-stream action="${action}" target="${target}"><template>${content}</template></turbo-stream>`;
+        document.body.insertAdjacentHTML('beforeend', streamHTML);
+      }
+      
+      logEvent('turbo-stream', `${action} on ${target}`);
+    }
+    
+    function clearStreamTarget() {
+      const target = document.getElementById('stream-target');
+      if (target) {
+        target.innerHTML = '<p class="font-semibold">Original Content</p><p class="text-sm text-gray-600">This is the target for stream operations</p>';
+      }
+    }
+    
+    function performMultipleStreams() {
+      const timestamp = new Date().toLocaleTimeString();
+      const streams = [
+        { target: 'stream-target-1', content: `<p class="font-semibold">Updated 1</p><p class="text-xs">${timestamp}</p>` },
+        { target: 'stream-target-2', content: `<p class="font-semibold">Updated 2</p><p class="text-xs">${timestamp}</p>` },
+        { target: 'stream-target-3', content: `<p class="font-semibold">Updated 3</p><p class="text-xs">${timestamp}</p>` }
+      ];
+      
+      streams.forEach(stream => {
+        const streamHTML = `<turbo-stream action="update" target="${stream.target}"><template>${stream.content}</template></turbo-stream>`;
+        document.body.insertAdjacentHTML('beforeend', streamHTML);
+      });
+    }
+    
+    // Frame operations
+    function updateFrame(frameId, content) {
+      const streamHTML = `<turbo-stream action="update" target="${frameId}"><template><p>${content}</p></template></turbo-stream>`;
+      document.body.insertAdjacentHTML('beforeend', streamHTML);
+    }
+    
+    // Event log functions
+    function clearEventLog() {
+      eventLog.length = 0;
+      updateEventLog();
+    }
+    
+    function triggerNavigation() {
+      Turbo.visit('?event-test=' + Date.now());
+    }
+    
+    // Loading demo
+    function showLoadingDemo() {
+      const demo = document.getElementById('loading-demo');
+      demo.innerHTML = '<p class="text-blue-600">Loading...</p>';
+      
+      setTimeout(() => {
+        demo.innerHTML = '<p class="text-green-600">Loaded successfully!</p>';
+      }, 2000);
+    }
+    
+    // Form submission
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      logEvent('form:submit', 'Form submitted');
+      
+      const formData = new FormData(event.target);
+      const input = formData.get('text') || 'No text entered';
+      
+      setTimeout(() => {
+        logEvent('form:success', `Submitted: ${input}`);
+      }, 500);
+    }
+    
+    // Progress bar
+    function showProgressBar() {
+      const progressBar = document.createElement('div');
+      progressBar.className = 'fixed top-0 left-0 h-1 bg-blue-500 z-50 transition-all duration-300';
+      progressBar.style.width = '0%';
+      document.body.appendChild(progressBar);
+      
+      let width = 0;
+      const interval = setInterval(() => {
+        width += 10;
+        progressBar.style.width = width + '%';
+        
+        if (width >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            progressBar.remove();
+          }, 300);
+        }
+      }, 100);
+    }
+    
+    // Morphing
+    function morphContent() {
+      const morphDemo = document.getElementById('morph-demo');
+      const isBlue = morphDemo.classList.contains('from-blue-100');
+      
+      if (isBlue) {
+        morphDemo.className = 'bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded transition-all duration-500';
+        morphDemo.innerHTML = '<p class="font-semibold">Morphed Content</p><p class="text-sm">Content has been smoothly morphed!</p>';
+      } else {
+        morphDemo.className = 'bg-gradient-to-r from-blue-100 to-purple-100 p-4 rounded transition-all duration-500';
+        morphDemo.innerHTML = '<p class="font-semibold">Morphing Content</p><p class="text-sm">This content can be morphed smoothly</p>';
+      }
+    }
+    
+    // Initialize on load
+    updatePermanentTime();
+    setInterval(updatePermanentTime, 1000);
+  </script>
+</body>
+</html>

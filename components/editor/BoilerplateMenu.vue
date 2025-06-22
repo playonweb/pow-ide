@@ -133,10 +133,10 @@ const templates = [
   },
   {
     id: 9,
-    name: 'Three.js',
-    description: '3D graphics in the browser',
-    file: 'threejs.html',
-    icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/threedotjs.svg'
+    name: 'Stimulus - Rails',
+    description: 'HTML over the wire',
+    file: 'stimulus.html',
+    icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/stimulus.svg'
   },
   {
     id: 10,
@@ -172,7 +172,14 @@ const templates = [
     description: 'Simple web components',
     file: 'lit.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/lit.svg'
-  }
+  },
+  {
+    id: 15,
+    name: 'Three.js',
+    description: '3D graphics in the browser',
+    file: 'threejs.html',
+    icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/threedotjs.svg'
+  },
 ];
 
 // Search functionality

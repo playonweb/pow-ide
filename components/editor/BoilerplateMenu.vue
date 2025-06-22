@@ -78,6 +78,7 @@ const templates = [
   {
     id: 1,
     name: 'Vanilla JS',
+    slug: 'vanilla-js',
     description: 'Plain HTML & JavaScript',
     file: 'vanilla.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/javascript.svg'
@@ -85,6 +86,7 @@ const templates = [
   {
     id: 2,
     name: 'React',
+    slug: 'react',
     description: 'React with JSX support',
     file: 'react.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/react.svg'
@@ -92,6 +94,7 @@ const templates = [
   {
     id: 3,
     name: 'Vue',
+    slug: 'vue',
     description: 'Vue 3 with Composition API',
     file: 'vue.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/vuedotjs.svg'
@@ -99,6 +102,7 @@ const templates = [
   {
     id: 4,
     name: 'Angular',
+    slug: 'angular',
     description: 'Basic Angular application',
     file: 'angular.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/angular.svg'
@@ -106,6 +110,7 @@ const templates = [
   {
     id: 5,
     name: 'Tailwind CSS',
+    slug: 'tailwind',
     description: 'Responsive layout with Tailwind',
     file: 'tailwind.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/tailwindcss.svg'
@@ -113,6 +118,7 @@ const templates = [
   {
     id: 6,
     name: 'Bootstrap',
+    slug: 'bootstrap',
     description: 'Bootstrap 5 components',
     file: 'bootstrap.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/bootstrap.svg'
@@ -120,6 +126,7 @@ const templates = [
   {
     id: 7,
     name: 'HTMX',
+    slug: 'htmx',
     description: 'AJAX with HTML attributes',
     file: 'htmx.html',
     icon: 'https://htmx.org/favicon.svg'
@@ -127,6 +134,7 @@ const templates = [
   {
     id: 8,
     name: 'Alpine.js',
+    slug: 'alpine',
     description: 'Lightweight JavaScript framework',
     file: 'alpine.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/alpinedotjs.svg'
@@ -134,6 +142,7 @@ const templates = [
   {
     id: 9,
     name: 'Stimulus - Rails',
+    slug: 'stimulus',
     description: 'HTML over the wire',
     file: 'stimulus.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/stimulus.svg'
@@ -141,6 +150,7 @@ const templates = [
   {
     id: 10,
     name: 'Firebase',
+    slug: 'firebase',
     description: 'Real-time database & auth',
     file: 'firebase.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/firebase.svg'
@@ -148,6 +158,7 @@ const templates = [
   {
     id: 11,
     name: 'Google Drive',
+    slug: 'google-drive',
     description: 'Google Drive API integration',
     file: 'google-drive.html',
     icon: 'https://drive.google.com/favicon.ico'
@@ -155,6 +166,7 @@ const templates = [
   {
     id: 12,
     name: 'GSAP',
+    slug: 'gsap',
     description: 'Professional animation library',
     file: 'gsap.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/greensock.svg'
@@ -162,6 +174,7 @@ const templates = [
   {
     id: 13,
     name: 'D3.js',
+    slug: 'd3',
     description: 'Data visualization library',
     file: 'd3.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/d3dotjs.svg'
@@ -169,6 +182,7 @@ const templates = [
   {
     id: 14,
     name: 'Lit',
+    slug: 'lit',
     description: 'Simple web components',
     file: 'lit.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/lit.svg'
@@ -176,6 +190,7 @@ const templates = [
   {
     id: 15,
     name: 'Three.js',
+    slug: 'three-js',
     description: '3D graphics in the browser',
     file: 'threejs.html',
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/threedotjs.svg'
@@ -230,4 +245,16 @@ const selectBoilerplate = (template) => {
 const previewBoilerplate = (template) => {
   window.open(`/boilerplates/${template}`, template);
 };
+
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const templateSlug = urlParams.get('template');
+  
+  if (templateSlug) {
+    const template = templates.find(t => t.slug === templateSlug);
+    if (template) {
+      selectBoilerplate(template.file);
+    }
+  }
+});
 </script>

@@ -3,30 +3,94 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HTMX Single Page Example</title>
-    <link rel="icon" href="https://htmx.org/favicon.svg" type="image/svg">
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/htmx/2.0.4/htmx.min.js"
-      integrity="sha512-2kIcAizYXhIn8TzUvqzEDZNuDZ+aW7yE/+f1HJHXFjQcGNfv1kqzJSTBRBSlOgp6B/KZsz1K0a3ZTqP9dnxioQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
+    <title>HTMX Cheat Sheet</title>
+    <link rel="icon" href="https://htmx.org/favicon.svg" type="image/svg+xml" />
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   </head>
-  <body>
-    <h1>HTMX Single Page Example</h1>
+  <body class="bg-gray-100 min-h-screen p-6 text-gray-800">
 
-    <button
-      hx-get="/boilerplates/vue.html #greeting"
-      hx-target="#message"
-      hx-swap="outerHTML"
-    >
-      Get Greeting
-    </button>
+    <h1 class="text-3xl font-bold mb-4">HTMX Cheat Sheet</h1>
 
-    <div id="message">Click the button to get a greeting.</div>
+    <!-- 1. GET Request Example -->
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">🔹 GET Request</h2>
+      <button
+        class="bg-blue-500 text-white px-4 py-2 rounded"
+        hx-get="https://jsonplaceholder.typicode.com/posts/1"
+        hx-target="#get-result"
+        hx-swap="innerHTML"
+      >
+        Load Post
+      </button>
+      <pre id="get-result" class="mt-2 bg-white p-3 rounded shadow text-sm"></pre>
+    </section>
 
-    <div id="greeting" style="display: none">
-      Hello, welcome to HTMX on a single page!
-    </div>
+    <!-- 2. POST Request Example -->
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">🔹 POST Request</h2>
+      <form
+        hx-post="https://jsonplaceholder.typicode.com/posts"
+        hx-target="#post-result"
+        hx-swap="innerHTML"
+      >
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          class="border p-2 mr-2 rounded"
+        />
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">
+          Submit
+        </button>
+      </form>
+      <pre id="post-result" class="mt-2 bg-white p-3 rounded shadow text-sm"></pre>
+    </section>
+
+    <!-- 3. Trigger Example -->
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">🔹 Trigger on Change</h2>
+      <select
+        class="border p-2 rounded"
+        hx-get="https://jsonplaceholder.typicode.com/users/1"
+        hx-trigger="change"
+        hx-target="#user-result"
+        hx-swap="innerHTML"
+      >
+        <option value="">Select a user</option>
+        <option value="1" hx-get="https://jsonplaceholder.typicode.com/users/1">User 1</option>
+        <option value="2" hx-get="https://jsonplaceholder.typicode.com/users/2">User 2</option>
+      </select>
+      <pre id="user-result" class="mt-2 bg-white p-3 rounded shadow text-sm"></pre>
+    </section>
+
+    <!-- 4. Load Content on Page Load -->
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">🔹 Load on Page Load</h2>
+      <div
+        hx-get="https://jsonplaceholder.typicode.com/todos/1"
+        hx-trigger="load"
+        hx-target="#todo"
+        hx-swap="innerHTML"
+      ></div>
+      <pre id="todo" class="bg-white p-3 rounded shadow text-sm"></pre>
+    </section>
+
+    <!-- 5. Swap Variants -->
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">🔹 Swap Types</h2>
+      <button
+        class="bg-purple-500 text-white px-4 py-2 rounded"
+        hx-get="https://jsonplaceholder.typicode.com/posts/2"
+        hx-target="#swap-area"
+        hx-swap="outerHTML"
+      >
+        Replace Entire Box
+      </button>
+      <div id="swap-area" class="mt-2 bg-white p-3 rounded shadow text-sm">
+        Original Content Here
+      </div>
+    </section>
+
   </body>
 </html>

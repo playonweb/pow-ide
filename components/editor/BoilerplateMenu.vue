@@ -255,5 +255,11 @@ onMounted(() => {
       selectBoilerplate(template.file);
     }
   }
+  // remove all query parameters from the URL
+  if (window.history.replaceState) {
+    const url = new URL(window.location.href);
+    url.search = '';
+    window.history.replaceState({}, document.title, url.toString());
+  }
 });
 </script>

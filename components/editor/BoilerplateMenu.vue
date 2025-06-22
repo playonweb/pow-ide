@@ -249,7 +249,6 @@ const previewBoilerplate = (template) => {
 onMounted(() => {
   const urlParams = new URLSearchParams(window.location.search);
   const templateSlug = urlParams.get('template');
-  
   if (templateSlug) {
     const template = templates.find(t => t.slug === templateSlug);
     if (template) {

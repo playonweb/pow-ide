@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Underscore.js Showcase</title>
+  <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"></script>
+</head>
+<body>
+  <sl-card>
+    <h1 slot="header">Underscore.js Magic</h1>
+    <sl-tab-group>
+      <sl-tab slot="nav" panel="map">Map</sl-tab>
+      <sl-tab slot="nav" panel="filter">Filter</sl-tab>
+      <sl-tab slot="nav" panel="each">Each</sl-tab>
+      <sl-tab slot="nav" panel="reduce">Reduce</sl-tab>
+      <sl-tab slot="nav" panel="template">Template</sl-tab>
+
+      <sl-tab-panel name="map">
+        <h2>Map</h2>
+        <p>Transform arrays with ease, Ruby-style.</p>
+        <pre id="map-output"></pre>
+      </sl-tab-panel>
+      <sl-tab-panel name="filter">
+        <h2>Filter</h2>
+        <p>Select elements based on conditions.</p>
+        <pre id="filter-output"></pre>
+      </sl-tab-panel>
+      <sl-tab-panel name="each">
+        <h2>Each</h2>
+        <p>Iterate over arrays or objects.</p>
+        <pre id="each-output"></pre>
+      </sl-tab-panel>
+      <sl-tab-panel name="reduce">
+        <h2>Reduce</h2>
+        <p>Aggregate values into a single result.</p>
+        <pre id="reduce-output"></pre>
+      </sl-tab-panel>
+      <sl-tab-panel name="template">
+        <h2>Template</h2>
+        <p>Ruby-like string templating.</p>
+        <pre id="template-output"></pre>
+      </sl-tab-panel>
+    </sl-tab-group>
+  </sl-card>
+
+  <script>
+    // Map
+    const numbers = [1, 2, 3, 4, 5];
+    const doubled = _.map(numbers, num => num * 2);
+    document.querySelector('#map-output').textContent = `Doubled: ${doubled}`;
+
+    // Filter
+    const evens = _.filter(numbers, num => num % 2 === 0);
+    document.querySelector('#filter-output').textContent = `Evens: ${evens}`;
+
+    // Each
+    let eachResult = '';
+    _.each(numbers, num => eachResult += `${num} `);
+    document.querySelector('#each-output').textContent = `Iterated: ${eachResult.trim()}`;
+
+    // Reduce
+    const sum = _.reduce(numbers, (memo, num) => memo + num, 0);
+    document.querySelector('#reduce-output').textContent = `Sum: ${sum}`;
+
+    // Template
+    const template = _.template('Hello, <%= name %>! You are <%= age %> years old.');
+    const user = { name: 'Alice', age: 25 };
+    document.querySelector('#template-output').textContent = template(user);
+  </script>
+</body>
+</html>

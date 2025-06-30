@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mustache Templating Comprehensive Examples</title>
+    <!-- Mustache.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 font-sans text-gray-800 px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-3xl font-bold text-center text-blue-700 mb-10">
+        Mustache Templating Comprehensive Examples
+      </h1>
+
+      <!-- 1. Basic Variable Interpolation -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          1. Basic Variable Interpolation
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          Template: Hello, {{name}}! Your age is {{age}} and your role is
+          {{role}}.
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: { name: "Alice", age: 28, role: "Developer" }
+        </div>
+        <button
+          onclick="renderExample('template1', data1, 'output1')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output1"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template1" type="text/template">
+          Hello, {{name}}! Your age is {{age}} and your role is {{role}}.
+        </script>
+      </section>
+
+      <!-- 2. HTML Escaping -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          2. HTML Escaping vs Unescaped HTML
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          Escaped: {{scriptTag}}<br />Unescaped: {{{scriptTag}}}<br />Unescaped (Alternative): {{& scriptTag}}
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: { scriptTag: "<script>alert('XSS');</script>" }
+        </div>
+        <button
+          onclick="renderExample('template2', data2, 'output2')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output2"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template2" type="text/template">
+          <p class="font-medium">Escaped (default):</p>
+          <p class="mb-2">{{scriptTag}}</p>
+          <p class="font-medium">Unescaped (triple mustache):</p>
+          <p class="mb-2">{{{scriptTag}}}</p>
+          <p class="font-medium">Unescaped (ampersand):</p>
+          <p>{{& scriptTag}}</p>
+        </script>
+      </section>
+
+      <!-- 3. Sections for Arrays -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          3. Sections for Arrays (Iteration)
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          {{#users}}
+          <p>User: {{name}} - Age: {{age}} - {{role}}</p>
+          {{/users}}
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: { users: [ { name: "Bob", age: 25, role: "Designer" }, { name:
+          "Charlie", age: 30, role: "Manager" }, { name: "David", age: 22, role:
+          "Intern" } ]}
+        </div>
+        <button
+          onclick="renderExample('template3', data3, 'output3')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output3"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template3" type="text/template">
+          <h4 class="font-medium text-lg mb-2">Team Members:</h4>
+          <ul class="list-disc pl-5">
+          {{#users}}
+            <li>{{name}} ({{age}}) - {{role}}</li>
+          {{/users}}
+          </ul>
+        </script>
+      </section>
+
+      <!-- 4. Inverted Sections -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          4. Inverted Sections
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          {{#users}}
+          <p>User: {{name}}</p>
+          {{/users}} {{^users}}
+          <p>No users found.</p>
+          {{/users}}
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data 1: { users: [] }<br />Data 2: { users: [{ name: "Eva" }] }
+        </div>
+        <button
+          onclick="renderExample('template4a', data4a, 'output4a')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render Empty
+        </button>
+        <div
+          id="output4a"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <button
+          onclick="renderExample('template4b', data4b, 'output4b')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render With Data
+        </button>
+        <div
+          id="output4b"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template4a" type="text/template">
+          <h4 class="font-medium text-lg mb-2">Users List (Empty):</h4>
+          {{#users}}
+            <p>User: {{name}}</p>
+          {{/users}}
+          {{^users}}
+            <p class="text-orange-500">No users found.</p>
+          {{/users}}
+        </script>
+        <script id="template4b" type="text/template">
+          <h4 class="font-medium text-lg mb-2">Users List (With Data):</h4>
+          {{#users}}
+            <p>User: {{name}}</p>
+          {{/users}}
+          {{^users}}
+            <p class="text-orange-500">No users found.</p>
+          {{/users}}
+        </script>
+      </section>
+
+      <!-- 5. Sections for Boolean Values -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          5. Sections for Boolean Values
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          {{#isActive}}
+          <p>User is active</p>
+          {{/isActive}} {{^isActive}}
+          <p>User is inactive</p>
+          {{/isActive}}
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data 1: { isActive: true }<br />Data 2: { isActive: false }
+        </div>
+        <button
+          onclick="renderExample('template5a', data5a, 'output5a')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render Active
+        </button>
+        <div
+          id="output5a"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <button
+          onclick="renderExample('template5b', data5b, 'output5b')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render Inactive
+        </button>
+        <div
+          id="output5b"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template5a" type="text/template">
+          <h4 class="font-medium text-lg mb-2">User Status (Active):</h4>
+          {{#isActive}}
+            <p class="text-green-500">✅ User is active</p>
+          {{/isActive}}
+          {{^isActive}}
+            <p class="text-red-500">❌ User is inactive</p>
+          {{/isActive}}
+        </script>
+        <script id="template5b" type="text/template">
+          <h4 class="font-medium text-lg mb-2">User Status (Inactive):</h4>
+          {{#isActive}}
+            <p class="text-green-500">✅ User is active</p>
+          {{/isActive}}
+          {{^isActive}}
+            <p class="text-red-500">❌ User is inactive</p>
+          {{/isActive}}
+        </script>
+      </section>
+
+      <!-- 6. Dot Notation -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          6. Dot Notation for Nested Objects
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          <p>User: {{user.name}}</p>
+          <p>Address: {{user.address.city}}, {{user.address.country}}</p>
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: { user: { name: "Frank", address: { city: "New York", country:
+          "USA" } } }
+        </div>
+        <button
+          onclick="renderExample('template6', data6, 'output6')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output6"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template6" type="text/template">
+          <h4 class="font-medium text-lg mb-2">User Profile:</h4>
+          <p><span class="font-semibold">Name:</span> {{user.name}}</p>
+          <p><span class="font-semibold">Address:</span> {{user.address.city}}, {{user.address.country}}</p>
+        </script>
+      </section>
+
+      <!-- 7. Partials -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          7. Using Partials
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          Main template:
+          <div>
+            <h4>Contacts:</h4>
+            {{#contacts}} {{> contactPartial}} {{/contacts}}
+          </div>
+
+          Partial template:
+          <div class="contact">
+            <p>
+              <strong>{{name}}</strong><br />
+              {{email}}
+            </p>
+          </div>
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          Data: { contacts: [ { name: "Grace", email: "grace@example.com" }, {
+          name: "Henry", email: "henry@example.com" } ] }
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Syntax:
+          <pre class="text-xs font-mono" lang="javascript">
+Mustache.render(template, data, { contactPartial: partial });</pre
+          >
+        </div>
+        <button
+          onclick="renderPartialExample()"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output7"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="contactPartial" type="text/template">
+          <div class="border-l-4 border-blue-500 pl-3 mb-3">
+            <p class="font-semibold">{{name}}</p>
+            <p class="text-gray-600">{{email}}</p>
+          </div>
+        </script>
+        <script id="template7" type="text/template">
+          <h4 class="font-medium text-lg mb-3">Contacts:</h4>
+          {{#contacts}}
+            {{> contactPartial}}
+          {{/contacts}}
+        </script>
+      </section>
+
+      <!-- 8. Comments -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          8. Comments
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          <p>This is visible content</p>
+          {{! This is a comment that won't be rendered }}
+          <p>This is also visible</p>
+        </div>
+        <button
+          onclick="renderExample('template8', {}, 'output8')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output8"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template8" type="text/template">
+          <p>This is visible content</p>
+          {{! This is a comment that won't be rendered in the output }}
+          <p>This is also visible</p>
+        </script>
+      </section>
+
+      <!-- 9. Changing Context -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          9. Changing Context
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          {{#user}}
+          <p>Name: {{name}}</p>
+          <p>Age: {{age}}</p>
+          {{#address}}
+          <p>City: {{city}}</p>
+          <p>Country: {{country}}</p>
+          {{/address}} {{/user}}
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: { user: { name: "Isabel", age: 31, address: { city: "Berlin",
+          country: "Germany" } } }
+        </div>
+        <button
+          onclick="renderExample('template9', data9, 'output9')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output9"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template9" type="text/template">
+          <h4 class="font-medium text-lg mb-2">User Profile with Context Change:</h4>
+          {{#user}}
+            <p><span class="font-semibold">Name:</span> {{name}}</p>
+            <p><span class="font-semibold">Age:</span> {{age}}</p>
+            {{#address}}
+              <p><span class="font-semibold">City:</span> {{city}}</p>
+              <p><span class="font-semibold">Country:</span> {{country}}</p>
+            {{/address}}
+          {{/user}}
+        </script>
+      </section>
+
+      <!-- 10. Lambda Functions -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          10. Lambda Functions
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          {{#uppercase}} Hello, {{name}}! {{/uppercase}}
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: { name: "John", uppercase: function() { return function(text,
+          render) { return render(text).toUpperCase(); } } }
+        </div>
+        <button
+          onclick="renderExample('template10', data10, 'output10')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output10"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template10" type="text/template">
+          <h4 class="font-medium text-lg mb-2">Using Lambda:</h4>
+          {{#uppercase}}
+            Hello, {{name}}!
+          {{/uppercase}}
+        </script>
+      </section>
+
+      <!-- 11. Dynamic Sections -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          11. Dynamic Sections with Functions
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          {{#items}}
+          <p>
+            {{name}}: {{#calculateTotal}}{{price}} ×
+            {{quantity}}{{/calculateTotal}}
+          </p>
+          {{/items}}
+        </div>
+        <pre
+          class="text-xs font-mono bg-gray-100 p-3 rounded"
+          lang="javascript"
+        >
+data: {
+    items: [ { name: "Apple", price: 0.5, quantity: 10 }, { name:"Banana", price: 0.3, quantity: 5 } ],
+    calculateTotal: function() {
+        return function(text, render) {
+            const parts = render(text).split('×');
+            const price = parseFloat(parts[0]);
+            const quantity = parseInt(parts[1]);
+            
+            return '$' + (price * quantity).toFixed(2);
+        }
+    }
+}
+        </pre>
+        <button
+          onclick="renderExample('template11', data11, 'output11')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output11"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template11" type="text/template">
+          <h4 class="font-medium text-lg mb-2">Shopping Cart:</h4>
+          <ul class="list-disc pl-5">
+          {{#items}}
+            <li>{{name}}: {{#calculateTotal}}{{price}} × {{quantity}}{{/calculateTotal}}</li>
+          {{/items}}
+          </ul>
+        </script>
+      </section>
+
+      <!-- 12. Implicit Iterator -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          12. Implicit Iterator
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          {{#items}}
+            <li>{{.}}</li>
+          {{/items}}
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: { items: ["apple", "banana", "cherry"] }
+        </div>
+        <button
+          onclick="renderExample('template12', data12, 'output12')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output12"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template12" type="text/template">
+          <h4 class="font-medium text-lg mb-2">Fruit List:</h4>
+          <ul class="list-disc pl-5">
+          {{#items}}
+            <li>{{.}}</li>
+          {{/items}}
+          </ul>
+        </script>
+      </section>
+
+      <!-- 13. Blocks and Parents -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          13. Blocks and Parents (Template Inheritance)
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          Base Template:
+          <pre>
+<div class="base">
+  <h1>{{$title}}Default Title{{/title}}</h1>
+  <div>{{$content}}Default content{{/content}}</div>
+</div>
+          </pre>
+          Child Template:
+          <pre>
+{{< base}}
+  {{$title}}My Page Title{{/title}}
+  {{$content}}
+    <p>This is my page content.</p>
+  {{/content}}
+{{/base}}
+          </pre>
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: {}
+        </div>
+        <button
+          onclick="renderParentExample()"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output13"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="base" type="text/template">
+          <div class="base">
+            <h1>{{$title}}Default Title{{/title}}</h1>
+            <div>{{$content}}Default content{{/content}}</div>
+          </div>
+        </script>
+        <script id="template13" type="text/template">
+          {{< base}}
+            {{$title}}My Page Title{{/title}}
+            {{$content}}
+              <p>This is my page content.</p>
+            {{/content}}
+          {{/base}}
+        </script>
+      </section>
+
+      <!-- 14. Set Delimiter -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          14. Set Delimiter
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          {{name}} is a {{occupation}}.
+          {{=<% %>=}}
+          Now using ERB-style delimiters: <% name %> is a <% occupation %>.
+          <%={{ }}=%>
+          Back to Mustache delimiters: {{name}} is a {{occupation}}.
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: { name: "Alice", occupation: "developer" }
+        </div>
+        <button
+          onclick="renderExample('template14', data14, 'output14')"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output14"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="template14" type="text/template">
+          <h4 class="font-medium text-lg mb-2">Delimiter Switching:</h4>
+          <p>{{name}} is a {{occupation}}.</p>
+          {{=<% %>=}}
+          <p>Now using ERB-style delimiters: <% name %> is a <% occupation %>.</p>
+          <%={{ }}=%>
+          <p>Back to Mustache delimiters: {{name}} is a {{occupation}}.</p>
+        </script>
+      </section>
+
+      <!-- 15. Dynamic Partials -->
+      <section class="mb-10 bg-white p-6 rounded-lg shadow-md">
+        <h2
+          class="text-xl font-semibold text-blue-600 border-b border-blue-200 pb-2 mb-4"
+        >
+          15. Dynamic Partials
+        </h2>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm mb-2">
+          Main Template:
+          <pre>
+{{>* dynamicPartial}}
+          </pre>
+          Greeting Partial:
+          <pre>
+<p>Hello, {{name}}!</p>
+          </pre>
+          Farewell Partial:
+          <pre>
+<p>Goodbye, {{name}}!</p>
+          </pre>
+        </div>
+        <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+          Data: { name: "Alice", dynamicPartial: "greeting" }
+        </div>
+        <button
+          onclick="renderDynamicPartialExample()"
+          class="mt-3 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Render
+        </button>
+        <div
+          id="output15"
+          class="mt-3 p-4 border-l-4 border-green-500 bg-white"
+        ></div>
+        <script id="greeting" type="text/template">
+          <p>Hello, {{name}}!</p>
+        </script>
+        <script id="farewell" type="text/template">
+          <p>Goodbye, {{name}}!</p>
+        </script>
+        <script id="template15" type="text/template">
+          {{>*dynamicPartialName}}
+        </script>
+      </section>
+    </div>
+
+    <!-- JavaScript for rendering examples -->
+    <script>
+      // Example data
+      var data1 = { name: "Alice", age: 28, role: "Developer" };
+
+      var data2 = { scriptTag: "<script>alert('XSS');<\/script>" };
+
+      var data3 = {
+        users: [
+          { name: "Bob", age: 25, role: "Designer" },
+          { name: "Charlie", age: 30, role: "Manager" },
+          { name: "David", age: 22, role: "Intern" },
+        ],
+      };
+
+      var data4a = { users: [] };
+      var data4b = { users: [{ name: "Eva" }] };
+
+      var data5a = { isActive: true };
+      var data5b = { isActive: false };
+
+      var data6 = {
+        user: {
+          name: "Frank",
+          address: {
+            city: "New York",
+            country: "USA",
+          },
+        },
+      };
+
+      var data7 = {
+        contacts: [
+          { name: "Grace", email: "grace@example.com" },
+          { name: "Henry", email: "henry@example.com" },
+        ],
+      };
+
+      var data9 = {
+        user: {
+          name: "Isabel",
+          age: 31,
+          address: {
+            city: "Berlin",
+            country: "Germany",
+          },
+        },
+      };
+
+      var data10 = {
+        name: "John",
+        uppercase: function () {
+          return function (text, render) {
+            return render(text).toUpperCase();
+          };
+        },
+      };
+
+      var data11 = {
+        items: [
+          { name: "Apple", price: 0.5, quantity: 10 },
+          { name: "Banana", price: 0.3, quantity: 5 },
+        ],
+        calculateTotal: function () {
+          return function (text, render) {
+            const parts = render(text).split("×");
+            const price = parseFloat(parts[0].trim());
+            const quantity = parseInt(parts[1].trim());
+            return "$" + (price * quantity).toFixed(2);
+          };
+        },
+      };
+
+      var data12 = { items: ["apple", "banana", "cherry"] };
+
+      var data13 = {};
+
+      var data14 = { name: "Alice", occupation: "developer" };
+
+      var data15 = { name: "Alice", dynamicPartial: "greeting" };
+
+      // Function to render examples
+      function renderExample(templateId, data, outputId) {
+        var template = document.getElementById(templateId).innerHTML;
+        var rendered = Mustache.render(template, data);
+        document.getElementById(outputId).innerHTML = rendered;
+      }
+
+      // Function to render partial example
+      function renderPartialExample() {
+        var template = document.getElementById("template7").innerHTML;
+        var partial = document.getElementById("contactPartial").innerHTML;
+        var rendered = Mustache.render(template, data7, {
+          contactPartial: partial,
+        });
+        document.getElementById("output7").innerHTML = rendered;
+      }
+
+      // Function to render parent example
+      function renderParentExample() {
+        var template = document.getElementById("template13").innerHTML;
+        var baseTemplate = document.getElementById("base").innerHTML;
+        
+        // Since Mustache.js doesn't natively support template inheritance with the {{$title}}
+        // syntax, we'll simulate it by preprocessing our templates
+        
+        // Extract blocks from the child template
+        const titleMatch = template.match(/{{\$title}}([\s\S]*?){{\/title}}/);
+        const contentMatch = template.match(/{{\$content}}([\s\S]*?){{\/content}}/);
+        
+        // Get the content of the blocks
+        const titleContent = titleMatch ? titleMatch[1].trim() : "Default Title";
+        const contentContent = contentMatch ? contentMatch[1].trim() : "Default content";
+        
+        // Replace blocks in base template
+        let processedTemplate = baseTemplate
+          .replace(/{{\$title}}[\s\S]*?{{\/title}}/, titleContent)
+          .replace(/{{\$content}}[\s\S]*?{{\/content}}/, contentContent);
+        
+        // Render the processed template
+        var rendered = Mustache.render(processedTemplate, data13);
+        document.getElementById("output13").innerHTML = rendered;
+      }
+
+      // Function to render dynamic partial example
+      function renderDynamicPartialExample() {
+        var template = document.getElementById("template15").innerHTML;
+        var greeting = document.getElementById("greeting").innerHTML;
+        var farewell = document.getElementById("farewell").innerHTML;
+        
+        // Create an object with both partials
+        var partials = {
+          greeting: greeting,
+          farewell: farewell
+        };
+        
+        // Create data object with the name and set dynamicPartialName to "greeting"
+        var dynamicData = {
+          name: "Alice",
+          dynamicPartialName: "greeting"
+        };
+        
+        try {
+          // Need to use a different approach since >* doesn't work in all Mustache implementations
+          // Replace {{>*dynamicPartialName}} with {{>greeting}} based on the data
+          var processedTemplate = template.replace(/{{>\*dynamicPartialName}}/g, 
+              "{{>" + dynamicData.dynamicPartialName + "}}");
+          
+          // Now render with the modified template
+          var rendered = Mustache.render(processedTemplate, dynamicData, partials);
+          document.getElementById("output15").innerHTML = rendered;
+        } catch (e) {
+          document.getElementById("output15").innerHTML = 
+            "<p class='text-red-500'>Error: " + e.message + "</p>" +
+            "<p>Note: Dynamic partials with {{>*name}} syntax may not be supported in this version of Mustache.js</p>";
+        }
+      }
+    </script>
+  </body>
+</html>

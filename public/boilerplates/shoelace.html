@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shoelace Components Demo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"></script>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+    .section h2 {
+      margin-bottom: 1rem;
+    }
+    .component-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+    sl-card {
+      max-width: 300px;
+    }
+    /* Mitigate potential ResizeObserver issues */
+    sl-tab-group, sl-dialog {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 800px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shoelace Components Demo.</h1>
+
+  <!-- Buttons -->
+  <div class="section">
+    <h2>Buttons</h2>
+    <div class="component-group">
+      <sl-button variant="primary">Primary</sl-button>
+      <sl-button variant="success">Success</sl-button>
+      <sl-button variant="danger" disabled>Danger (Disabled)</sl-button>
+      <sl-button variant="default" pill>Pill Button</sl-button>
+      <sl-button variant="primary" size="small">
+        <sl-icon slot="prefix" name="gear"></sl-icon>
+        Small with Icon
+      </sl-button>
+    </div>
+  </div>
+
+  <!-- Inputs -->
+  <div class="section">
+    <h2>Inputs</h2>
+    <div class="component-group">
+      <sl-input label="Text Input" placeholder="Enter text" clearable></sl-input>
+      <sl-input type="password" label="Password" password-toggle></sl-input>
+      <sl-select label="Select Menu" value="option-1">
+        <sl-option value="option-1">Option 1</sl-option>
+        <sl-option value="option-2">Option 2</sl-option>
+        <sl-option value="option-3">Option 3</sl-option>
+      </sl-select>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="section">
+    <h2>Cards</h2>
+    <div class="component-group">
+      <sl-card>
+        <img slot="image" src="https://placehold.co/300x150" alt="Placeholder Image">
+        <h3>Card Title</h3>
+        <p>This is a basic card with an image.</p>
+        <sl-button slot="footer" variant="primary">Action</sl-button>
+      </sl-card>
+      <sl-card class="card-overview">
+        <strong>Overview Card</strong>
+        <p>A simple card without an image.</p>
+      </sl-card>
+    </div>
+  </div>
+
+  <!-- Dialog -->
+  <div class="section">
+    <h2>Dialog</h2>
+    <sl-button id="open-dialog" variant="primary">Open Dialog</sl-button>
+    <sl-dialog label="Sample Dialog" id="sample-dialog">
+      <p>This is a dialog with some content. You can close it with the button below.</p>
+      <sl-button slot="footer" variant="primary" id="close-dialog">Close</sl-button>
+    </sl-dialog>
+  </div>
+
+  <!-- Tabs -->
+  <div class="section">
+    <h2>Tabs</h2>
+    <sl-tab-group>
+      <sl-tab slot="nav" panel="tab1">Tab 1</sl-tab>
+      <sl-tab slot="nav" panel="tab2">Tab 2</sl-tab>
+      <sl-tab slot="nav" panel="tab3">Tab 3</sl-tab>
+      <sl-tab-panel name="tab1">Content for Tab 1</sl-tab-panel>
+      <sl-tab-panel name="tab2">Content for Tab 2</sl-tab-panel>
+      <sl-tab-panel name="tab3">Content for Tab 3</sl-tab-panel>
+    </sl-tab-group>
+  </div>
+
+  <!-- Progress Indicators -->
+  <div class="section">
+    <h2>Progress Indicators</h2>
+    <div class="component-group">
+      <sl-progress-bar value="75" label="Progress"></sl-progress-bar>
+      <sl-progress-ring value="50" label="Completion"></sl-progress-ring>
+      <sl-spinner></sl-spinner>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div class="section">
+    <h2>Alerts</h2>
+    <sl-alert open variant="success">
+      <sl-icon slot="icon" name="check2-circle"></sl-icon>
+      This is a success alert!
+    </sl-alert>
+  </div>
+
+  <!-- Dropdown -->
+  <div class="section">
+    <h2>Dropdown</h2>
+    <sl-dropdown>
+      <sl-button slot="trigger" caret>Dropdown</sl-button>
+      <sl-menu>
+        <sl-menu-item>Item 1</sl-menu-item>
+        <sl-menu-item>Item 2</sl-menu-item>
+        <sl-menu-item disabled>Disabled Item</sl-menu-item>
+      </sl-menu>
+    </sl-dropdown>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="section">
+    <h2>Tooltip</h2>
+    <sl-tooltip content="This is a tooltip">
+      <sl-button>Hover me</sl-button>
+    </sl-tooltip>
+  </div>
+
+  <script>
+    // Dialog interaction
+    const dialog = document.querySelector('#sample-dialog');
+    document.querySelector('#open-dialog').addEventListener('click', () => dialog.show());
+    document.querySelector('#close-dialog').addEventListener('click', () => dialog.hide());
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoffeeScript Showcase</title>
+  <script src="https://cdn.jsdelivr.net/npm/coffeescript@2.7.0/lib/coffeescript-browser-compiler-legacy/coffeescript.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"></script>
+</head>
+<body>
+  <sl-card>
+    <h1 slot="header">CoffeeScript Magic</h1>
+    <sl-tab-group>
+      <sl-tab slot="nav" panel="syntax">Concise Syntax</sl-tab>
+      <sl-tab slot="nav" panel="comprehension">Array Comprehension</sl-tab>
+      <sl-tab slot="nav" panel="class">Classes</sl-tab>
+      <sl-tab slot="nav" panel="arrow">Fat Arrow</sl-tab>
+      <sl-tab slot="nav" panel="interpolation">String Interpolation</sl-tab>
+
+      <sl-tab-panel name="syntax">
+        <h2>Concise Syntax</h2>
+        <p>No curly braces or semicolons needed!</p>
+        <pre id="syntax-output"></pre>
+      </sl-tab-panel>
+      <sl-tab-panel name="comprehension">
+        <h2>Array Comprehension</h2>
+        <p>Filter and map arrays elegantly.</p>
+        <pre id="comprehension-output"></pre>
+      </sl-tab-panel>
+      <sl-tab-panel name="class">
+        <h2>Classes</h2>
+        <p>Simple class syntax for OOP.</p>
+        <pre id="class-output"></pre>
+      </sl-tab-panel>
+      <sl-tab-panel name="arrow">
+        <h2>Fat Arrow Functions</h2>
+        <p>Bind `this` automatically.</p>
+        <pre id="arrow-output"></pre>
+      </sl-tab-panel>
+      <sl-tab-panel name="interpolation">
+        <h2>String Interpolation</h2>
+        <p>Ruby-like string handling.</p>
+        <pre id="interpolation-output"></pre>
+      </sl-tab-panel>
+    </sl-tab-group>
+  </sl-card>
+
+  <script type="text/coffeescript">
+    # Concise Syntax
+    greet = (name) -> "Hello, #{name}!"
+    document.querySelector('#syntax-output').textContent = greet 'World'
+
+    # Array Comprehension
+    numbers = [1..10]
+    evens = (num for num in numbers when num % 2 is 0)
+    document.querySelector('#comprehension-output').textContent = "Evens: #{evens}"
+
+    # Classes
+    class Animal
+      constructor: (@name) ->
+      speak: -> "#{@name} says hi!"
+    dog = new Animal 'Dog'
+    document.querySelector('#class-output').textContent = dog.speak()
+
+    # Fat Arrow Functions
+    button = type: 'button', text: 'Click me'
+    clickHandler = =>
+      @text = 'Clicked!'
+      "Button says: #{@text}"
+    document.querySelector('#arrow-output').textContent = clickHandler.call button
+
+    # String Interpolation
+    user = name: 'Alice', age: 25
+    document.querySelector('#interpolation-output').textContent = "#{user.name} is #{user.age} years old."
+  </script>
+</body>
+</html>

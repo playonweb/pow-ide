@@ -35,7 +35,12 @@
         <li v-for="template in filteredTemplates" :key="template.id">
           <a @click.prevent="selectBoilerplate(template.file)" href="#" 
              class="flex items-center gap-3 p-2 rounded-md text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-            <img :src="template.icon" :alt="template.name" class="w-6 h-6 dark:invert" />
+            <!-- <img :src="template.icon" :alt="template.name" class="w-6 h-6 dark:invert" /> -->
+            <!-- if icon then show image if svg then show svg -->
+            <img v-if="template.icon" :src="template.icon" :alt="template.name" class="w-6 h-6 dark:invert" />
+            <span v-else class="w-6 h-6 flex items-center justify-center">
+              <span v-html="template.svg || template.icon"></span>
+            </span>
             <div class="flex-grow">
               <div class="font-medium">{{ template.name }}</div>
               <div class="text-xs text-gray-500 dark:text-gray-400">{{ template.description }}</div>
@@ -201,7 +206,40 @@ const templates = [
     slug: 'google-drive',
     description: 'Google Drive API integration',
     file: 'google-drive.html',
-    icon: 'https://drive.google.com/favicon.ico'
+    icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/googledrive.svg'
+  },
+  // shoelace, moustache
+  {
+    id: 17,
+    name: 'Shoelace',
+    slug: 'shoelace',
+    description: 'Modern UI components',
+    file: 'shoelace.html',
+    icon: 'https://shoelace.style/assets/images/wordmark.svg'
+  },
+  {
+    id: 18,
+    name: 'Mustache',
+    slug: 'mustache',
+    description: 'Logic-less templates',
+    file: 'mustache.html',
+    svg: '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 100 100"><text x="50" y="50" font-size="80" transform="rotate(90 50 50)">{</text></svg>'
+  },
+  {
+    id: 19,
+    name: 'CoffeeScript',
+    slug: 'coffeescript',
+    description: 'CoffeeScript template',
+    file: 'coffeescript.html',
+    icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/coffeescript.svg'
+  },
+  {
+    id: 20,
+    name: 'Underscore.js',
+    slug: 'underscore-js',
+    description: 'Utility library for JavaScript',
+    file: 'underscore-js.html',
+    icon: 'https://underscorejs.org/favicon.ico'
   },
 ];
 

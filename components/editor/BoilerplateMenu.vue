@@ -89,6 +89,14 @@ const templates = [
     icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/javascript.svg'
   },
   {
+    id: 1.1,
+    name: 'TypeScript',
+    slug: 'typescript',
+    description: 'TypeScript with JSX support',
+    file: 'typescript.html',
+    icon: 'https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/typescript.svg'
+  },
+  {
     id: 2,
     name: 'React',
     slug: 'react',
